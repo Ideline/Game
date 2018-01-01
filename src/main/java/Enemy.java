@@ -165,7 +165,7 @@ public class Enemy implements Runnable{
     private boolean isMovePossible(int x, int y)
     {
         int index = (x - mapPaddingX) + (y - mapPaddingY) * mapRowLength;
-        if(map[index].equals("*") || map[index].equals("+") || map[index].equals("-") || map[index].equals("E") || map[index].equals(".") || map[index].equals(","))
+        if(map[index].equals("*") || map[index].equals("+") || map[index].equals("E") || map[index].equals(".") || map[index].equals(","))
             return true;
         return false;
     }
@@ -217,6 +217,7 @@ public class Enemy implements Runnable{
         Coordinates c = findPlayer();
         String directionS = "";
         int direction = 0;
+        int nr = 0;
         if(c.getX() < x){
             // gå väst
             directionS = directionS + "w";
@@ -244,7 +245,15 @@ public class Enemy implements Runnable{
 
         switch (directionS){
             case "wn":
-                if(isMovePossible(x, y - 1)){
+                if(isMovePossible(x, y - 1) && isMovePossible(x - 1, y )){
+                    nr = randomizer();
+                    if(nr == 1 || nr == 2){
+                        direction = 1;
+                    }
+                    else
+                    direction = 3;
+                }
+                else if(isMovePossible(x, y - 1)){
                     direction = 1;
                 }
                 else if(isMovePossible(x - 1, y )){
@@ -258,7 +267,15 @@ public class Enemy implements Runnable{
                 direction = isMovePossible(x-1, y) ? 3 : randomizer();
                 break;
             case "ws":
-                if(isMovePossible(x, y + 1)){
+                if(isMovePossible(x, y + 1) && isMovePossible(x - 1, y )){
+                    nr = randomizer();
+                    if(nr == 1 || nr == 2){
+                        direction = 2;
+                    }
+                    else
+                        direction = 3;
+                }
+                else if(isMovePossible(x, y + 1)){
                     direction = 2;
                 }
                 else if(isMovePossible(x - 1, y )){
@@ -278,7 +295,15 @@ public class Enemy implements Runnable{
                 direction = isMovePossible(x, y+1) ? 2 : randomizer();
                 break;
             case "en":
-                if(isMovePossible(x, y - 1)){
+                if(isMovePossible(x, y - 1) && isMovePossible(x + 1, y )){
+                    nr = randomizer();
+                    if(nr == 1 || nr == 2){
+                        direction = 1;
+                    }
+                    else
+                        direction = 4;
+                }
+                else if(isMovePossible(x, y - 1)){
                     direction = 1;
                 }
                 else if(isMovePossible(x + 1, y )){
@@ -291,7 +316,15 @@ public class Enemy implements Runnable{
                 direction = isMovePossible(x+1, y) ? 4 : randomizer();
                 break;
             case "es":
-                if(isMovePossible(x + 1, y)){
+                if(isMovePossible(x + 1, y) && isMovePossible(x, y + 1)){
+                    nr = randomizer();
+                    if(nr == 1 || nr == 2){
+                        direction = 4;
+                    }
+                    else
+                        direction = 2;
+                }
+                else if(isMovePossible(x + 1, y)){
                     direction = 4;
                 }
                 else if(isMovePossible(x, y + 1)){
