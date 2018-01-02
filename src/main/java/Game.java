@@ -19,7 +19,7 @@ public class Game {
     private static Terminal terminal = null;
     private static long startTime = 0;
     private static int globalDelay = 400;
-    private static String[] map = null;
+    public static String[] map = null;
     private static int mapRowLength = 0;
     private static int mapPaddingX = 0;
     private static int mapPaddingY = 0;
@@ -40,12 +40,11 @@ public class Game {
             switch (level){
                 case 1:
                     e5 = new HardEnemy(terminal, map, mapRowLength, mapPaddingX, mapPaddingY, level, "e5");
-                    e5.start();
-                    /*
                     e1 = new EasyEnemy(terminal, map, mapRowLength, mapPaddingX, mapPaddingY, level, "e1");
                     e3 = new MediumEnemy(terminal, map, mapRowLength, mapPaddingX, mapPaddingY, level, "e3");
                     e1.start();
-                    e3.start();*/
+                    e3.start();
+                    e5.start();
                     break;
                 case 2:
                     e1 = new EasyEnemy(terminal, map, mapRowLength, mapPaddingX, mapPaddingY, level, "e1");
@@ -60,6 +59,9 @@ public class Game {
                     e5 = new HardEnemy(terminal, map, mapRowLength, mapPaddingX, mapPaddingY, level, "e5");
                     break;
             }
+
+            //SkeletonMap sm = new SkeletonMap(terminal, mapRowLength);
+            //sm.start();
 
             p = new Player(terminal, map, mapRowLength, mapPaddingX, mapPaddingY);
             p.initPlayer();

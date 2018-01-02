@@ -26,7 +26,6 @@ public class HardEnemy extends Enemy {
         try {
             while(isRunning) {
                 movement();
-                System.out.println("är i hardklassen!!!");
             }
         }
         catch(Exception e) {

@@ -25,7 +25,6 @@ public class MediumEnemy extends Enemy {
         try {
             while(isRunning) {
                 movement();
-                System.out.println("är i mediumklassen!!!");
             }
         }
         catch(Exception e) {

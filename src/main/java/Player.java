@@ -68,6 +68,10 @@ public class Player {
 
     private void resetPlayer() {
         try {
+            //Markera att vi har varit här
+            int index = (x - mapPaddingX) + (y - mapPaddingY) * mapRowLength;
+            String s = map[index];
+            map[index] = (s.equals(".") || s.equals("!") ? "!" : "^");
             terminal.setCursorPosition(x, y);
             terminal.putCharacter(' ');
         }
@@ -91,7 +95,8 @@ public class Player {
     private boolean isMovePossible(int x, int y)
     {
         int index = (x - mapPaddingX) + (y - mapPaddingY) * mapRowLength;
-        if(map[index].equals("*") || map[index].equals("+") || map[index].equals("."))
+        String s = map[index];
+        if(s.equals("*") || s.equals("+") || s.equals(".") || s.equals("^") || s.equals("!"))
             return true;
         return false;
     }

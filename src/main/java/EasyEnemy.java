@@ -25,7 +25,6 @@ public class EasyEnemy extends Enemy {
         try {
             while(isRunning) {
                 movement();
-                System.out.println(getThreadName() + " moved to " + getX() + " / " + getY());
             }
         }
         catch(Exception e) {

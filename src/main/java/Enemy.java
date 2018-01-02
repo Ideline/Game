@@ -1,3 +1,4 @@
+import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.terminal.Terminal;
 
@@ -23,6 +24,7 @@ public class Enemy implements Runnable{
     private String[] map;
     private int mapPaddingX, mapPaddingY, mapRowLength;
     private int level;
+    private boolean coordinateContainsCrum = false;
     protected boolean isRunning;
     protected Thread t;
     protected String threadName;
@@ -60,7 +62,18 @@ public class Enemy implements Runnable{
     private void setCharacter() {
         try {
             terminal.setCursorPosition(x, y);
-            terminal.setForegroundColor(TextColor.ANSI.YELLOW);
+            switch(this.getClass().getName()){
+                case "EasyEnemy":
+                    terminal.setForegroundColor(TextColor.ANSI.WHITE);
+                    break;
+                case "MediumEnemy":
+                    terminal.setForegroundColor(TextColor.ANSI.GREEN);
+                    break;
+                case "HardEnemy":
+                    terminal.setForegroundColor(TextColor.ANSI.RED);
+                    break;
+            }
+
             terminal.putCharacter('Ω');
             terminal.flush();
         }
@@ -77,13 +90,21 @@ public class Enemy implements Runnable{
         return direction;
     }
 
-    protected boolean move(int gcd, int direction){
+    private String getCoordinateObject(int x, int y)
+    {
+        int index = (x - mapPaddingX) + (y - mapPaddingY) * mapRowLength;
+        return map[index];
+    }
 
+    protected boolean move(int gcd, int direction){
+        return move(gcd, direction,false);
+    }
+    protected boolean move(int gcd, int direction, boolean privileged){
         try{
             switch(direction)
             {
                 case 1: { // upp
-                    if(isMovePossible(x, y-1)){
+                    if(isMovePossible(x, y-1, privileged)){
                         Thread.sleep(gcd);
                         resetEnemy();
                         y--;
@@ -98,7 +119,7 @@ public class Enemy implements Runnable{
                     }
                 }
                 case 2: { // ner
-                    if(isMovePossible(x, y+1)) {
+                    if(isMovePossible(x, y+1, privileged)) {
                         Thread.sleep(gcd);
                         resetEnemy();
                         y++;
@@ -113,7 +134,7 @@ public class Enemy implements Runnable{
                     }
                 }
                 case 3: { // vänster
-                    if(isMovePossible(x-1, y)) {
+                    if(isMovePossible(x-2, y, privileged)) {
                         Thread.sleep(gcd);
                         resetEnemy();
                         x = x - 2;
@@ -128,7 +149,7 @@ public class Enemy implements Runnable{
                     }
                 }
                 case 4: { // höger
-                    if(isMovePossible(x+1, y)) {
+                    if(isMovePossible(x+2, y, privileged)) {
                         Thread.sleep(gcd);
                         resetEnemy();
                         x = x + 2;
@@ -146,7 +167,7 @@ public class Enemy implements Runnable{
                     return true;
             }
         }
-        catch (InterruptedException e) {
+        catch (Exception e) {
             e.printStackTrace();
         }
         return false;
@@ -154,25 +175,33 @@ public class Enemy implements Runnable{
 
     private void resetEnemy() {
         try {
+            boolean isCrum = getCoordinateObject(x, y).equals("*") || getCoordinateObject(x, y).equals(".");
             terminal.setCursorPosition(x, y);
-            terminal.putCharacter(' ');
+            terminal.setForegroundColor(TextColor.ANSI.DEFAULT);
+            terminal.putCharacter(isCrum ? '•' : ' ');
+            terminal.flush();
         }
         catch(Exception e) {
             e.printStackTrace();
         }
     }
 
-    private boolean isMovePossible(int x, int y)
+    private boolean isMovePossible(int x, int y) {
+        return isMovePossible(x, y, false);
+    }
+    private boolean isMovePossible(int x, int y, boolean privileged)
     {
         int index = (x - mapPaddingX) + (y - mapPaddingY) * mapRowLength;
-        if(map[index].equals("*") || map[index].equals("+") || map[index].equals("E") || map[index].equals(".") || map[index].equals(","))
+        String s = map[index];
+        if(s.equals("*") || s.equals("+") || s.equals("P") || s.equals("E") || s.equals("e") || s.equals(".") || s.equals("!") || s.equals(",") || s.equals("^") || (s.equals("-") && privileged))
             return true;
         return false;
     }
 
     private boolean isCrossing(){
         int index = (x - mapPaddingX) + (y - mapPaddingY) * mapRowLength;
-        if(map[index].equals(".")){
+        String s = map[index];
+        if(s.equals(".") || s.equals("!")){
             return true;
         }
         return false;
@@ -192,10 +221,10 @@ public class Enemy implements Runnable{
     public int exitNest(int gcd, boolean hardMode){
         int move2 = 0;
         while(!isExit()){
-            move(gcd,3);
+            move(gcd,3, true);
         }
         for(int i = 0; i < 3; i++){
-            move(gcd,1);
+            move(gcd,1, true);
         }
         if(!hardMode) {
             Random r = new Random();
