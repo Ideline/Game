@@ -1,5 +1,7 @@
 import com.googlecode.lanterna.TerminalPosition;
+import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
 
 import java.util.Random;
@@ -9,8 +11,7 @@ public class Enemy implements Runnable {
     public Enemy() {
     }
 
-    public Enemy(Terminal terminal, Character[][] map, Character[][] coinMap, int mapRowLength, int mapRowHeight, int mapPaddingX, int mapPaddingY, int level, String threadName) {
-        this.terminal = terminal;
+    public Enemy(Character[][] map, Character[][] coinMap, int mapRowLength, int mapRowHeight, int mapPaddingX, int mapPaddingY, int level, String threadName) {
         this.map = map;
         this.coinMap = coinMap;
         this.mapRowLength = mapRowLength;
@@ -22,7 +23,6 @@ public class Enemy implements Runnable {
         this.threadName = threadName;
     }
 
-    private Terminal terminal;
     private int x, y;
     private Character[][] map;
     private Character[][]coinMap;
@@ -53,7 +53,7 @@ public class Enemy implements Runnable {
         return threadName;
     }
 
-    public void initEnemy() {
+    public void initEnemy() throws Exception {
         for (int j = 0; j < mapRowHeight; j++) {
             for (int i = 0; i < mapRowLength; i++) {
                 if (map[i][j] ==('E')) {
@@ -66,26 +66,22 @@ public class Enemy implements Runnable {
         }
     }
 
-    synchronized private void setCharacter() {
-        try {
-            terminal.setCursorPosition(x, y);
-            switch (this.getClass().getName()) {
-                case "EasyEnemy":
-                    terminal.setForegroundColor(TextColor.ANSI.WHITE);
-                    break;
-                case "MediumEnemy":
-                    terminal.setForegroundColor(TextColor.ANSI.GREEN);
-                    break;
-                case "HardEnemy":
-                    terminal.setForegroundColor(TextColor.ANSI.RED);
-                    break;
-            }
-
-            terminal.putCharacter('Ω');
-            terminal.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void setCharacter() throws Exception {
+        TextColor tc = TextColor.ANSI.WHITE;
+        switch (this.getClass().getName()) {
+            case "EasyEnemy":
+                tc = TextColor.ANSI.WHITE;
+                break;
+            case "MediumEnemy":
+                tc = TextColor.ANSI.GREEN;
+                break;
+            case "HardEnemy":
+                tc = TextColor.ANSI.RED;
+                break;
         }
+
+        Game.printToScreen(x, y, 'Ω', tc);
+        caughtPlayer();
     }
 
     private void movement() {
@@ -174,28 +170,19 @@ public class Enemy implements Runnable {
         return false;
     }
 
-    synchronized private void resetEnemy() {
-        try {
-
-            terminal.setCursorPosition(x, y);
-            terminal.setForegroundColor(TextColor.ANSI.DEFAULT);
-            if(coinMap[x-mapPaddingX][y-mapPaddingY] == '*'){
-                terminal.putCharacter('•');
-            }
-            else{
-                terminal.putCharacter(' ');
-            }
-            terminal.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void resetEnemy() throws Exception {
+        char c = ' ';
+        if(coinMap != null) {
+            c = (coinMap[x-mapPaddingX][y-mapPaddingY] == '*' ? '•' : ' ');
         }
+        Game.printToScreen(x, y, c, TextColor.ANSI.DEFAULT);
     }
 
-    synchronized private boolean isMovePossible(int x, int y) {
+    private boolean isMovePossible(int x, int y) {
         return isMovePossible(x, y, false);
     }
 
-    synchronized private boolean isMovePossible(int x, int y, boolean privileged) {
+    private boolean isMovePossible(int x, int y, boolean privileged) {
         int index1 = (x - mapPaddingX);
         int index2 = (y - mapPaddingY);
         char c = map[index1][index2];
@@ -204,7 +191,7 @@ public class Enemy implements Runnable {
         return false;
     }
 
-    synchronized private boolean isCrossing() {
+    private boolean isCrossing() {
         int index1 = (x - mapPaddingX);
         int index2 = (y - mapPaddingY);
         char c = map[index1][index2];
@@ -214,7 +201,7 @@ public class Enemy implements Runnable {
         return false;
     }
 
-    synchronized public boolean isExit() {
+    public boolean isExit() {
         int index1 = (x - mapPaddingX);
         int index2 = (y - mapPaddingY);
         char c = map[index1][index2];
@@ -224,11 +211,11 @@ public class Enemy implements Runnable {
         return false;
     }
 
-    synchronized public int exitNest(int gcd) {
+    public int exitNest(int gcd) {
         return exitNest(gcd, false);
     }
 
-    synchronized public int exitNest(int gcd, boolean hardMode) {
+    public int exitNest(int gcd, boolean hardMode) {
         int move2 = 0;
         while (!isExit()) {
             move(gcd, 3, true);
@@ -246,12 +233,12 @@ public class Enemy implements Runnable {
         return move2;
     }
 
-    synchronized public Coordinates findPlayer() {
+    public Coordinates findPlayer() {
         Coordinates xy = new Coordinates(Game.p.getX(), Game.p.getY());
         return xy;
     }
 
-    synchronized public DirectionResult huntPlayer() {
+    public DirectionResult huntPlayer() {
         DirectionResult dr = new DirectionResult();
         Coordinates c = findPlayer();
         String directionS = "";
@@ -359,6 +346,20 @@ public class Enemy implements Runnable {
         dr.setDirection(direction);
 
         return dr;
+    }
+
+    public void caughtPlayer(){
+
+        Coordinates c = findPlayer();
+        int playerX = c.getX();
+        int playerY = c.getY();
+
+        if(x == playerX && y == playerY) {
+            Game.setGameRunning(false);
+            System.out.println("GAME OVER!!!");
+        }
+
+
     }
 
     public void run() {

@@ -1,11 +1,14 @@
+import com.googlecode.lanterna.TerminalPosition;
+import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
+import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
 
 public class Player {
     public Player(boolean gameRunning) {
-        this.terminal = Game.getTerminal();
+        this.screen = Game.getScreen();
         this.map = Map.getMap();
         this.coinMap = Map.getCoinMap();
         this.mapRowLength = Map.getMapRowLength();
@@ -15,7 +18,7 @@ public class Player {
         this.gameRunning = gameRunning;
     }
 
-    private Terminal terminal;
+    private Screen screen;
     private int x, y;
     private Character[][] map;
     private Character[][] coinMap;
@@ -32,7 +35,7 @@ public class Player {
         return y;
     }
 
-    public void initPlayer() {
+    public void initPlayer() throws Exception {
         for(int j = 0; j < mapRowHeight; j++) {
             for (int i = 0; i < mapRowLength; i++) {
                 if (map[i][j] == ('P')) {
@@ -47,7 +50,7 @@ public class Player {
 
     public void handleInput() {
         try {
-            KeyStroke ks = terminal.pollInput();
+            KeyStroke ks = screen.pollInput();
             if (ks == null)
                 return;
 
@@ -91,7 +94,7 @@ public class Player {
     }
 
 
-    public void MoveUp() {
+    public void MoveUp() throws Exception {
         if (isMovePossible(x, y - 1)) {
             resetPlayer();
             y--;
@@ -99,7 +102,7 @@ public class Player {
         }
     }
 
-    public void MoveDown() {
+    public void MoveDown() throws Exception {
         if (isMovePossible(x, y + 1)) {
             resetPlayer();
             y++;
@@ -107,7 +110,7 @@ public class Player {
         }
     }
 
-    public void MoveLeft() {
+    public void MoveLeft() throws Exception {
         if (isMovePossible(x - 1, y)) {
             resetPlayer();
             x = x - 2;
@@ -115,7 +118,7 @@ public class Player {
         }
     }
 
-    public void MoveRight() {
+    public void MoveRight() throws Exception {
         if (isMovePossible(x + 1, y)) {
             resetPlayer();
             x = x + 2;
@@ -123,15 +126,19 @@ public class Player {
         }
     }
 
-    synchronized private void resetPlayer() {
+    private void resetPlayer() {
         try {
             //Markera att vi har varit här
 //            int index = (x - mapPaddingX) + (y - mapPaddingY) * mapRowLength;
 //            String s = map[index];
 //            map[index] = (s.equals(".") || s.equals("!") ? "!" : "^");
-            terminal.setCursorPosition(x, y);
-            terminal.putCharacter(' ');
-            if(coinMap[x-mapPaddingX][y-mapPaddingY] == '*'){
+
+            TerminalPosition cellToModify = new TerminalPosition(x, y);
+            TextCharacter characterInBackBuffer  = screen.getBackCharacter(cellToModify);
+            characterInBackBuffer = characterInBackBuffer.withCharacter(' ');
+            screen.setCharacter(cellToModify, characterInBackBuffer);
+
+            if(coinMap != null && coinMap[x-mapPaddingX][y-mapPaddingY] == '*'){
                 coinMap[x-mapPaddingX][y-mapPaddingY] = ' ';
             }
         } catch (Exception e) {
@@ -139,14 +146,12 @@ public class Player {
         }
     }
 
-    private void setCharacter() {
-        try {
-            terminal.setCursorPosition(x, y);
-            terminal.setForegroundColor(TextColor.ANSI.YELLOW);
-            terminal.putCharacter('☻');
-            terminal.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void setCharacter() throws Exception {
+        Game.printToScreen(x, y, '☻', TextColor.ANSI.YELLOW);
+
+        if(!Map.anyCoinsLeft()) {
+            Game.setGameRunning(false);
+            System.out.println("Du vann!");
         }
     }
 
