@@ -9,9 +9,10 @@ public class Enemy implements Runnable {
     public Enemy() {
     }
 
-    public Enemy(Terminal terminal, Character[][] map, int mapRowLength, int mapRowHeight, int mapPaddingX, int mapPaddingY, int level, String threadName) {
+    public Enemy(Terminal terminal, Character[][] map, Character[][] coinMap, int mapRowLength, int mapRowHeight, int mapPaddingX, int mapPaddingY, int level, String threadName) {
         this.terminal = terminal;
         this.map = map;
+        this.coinMap = coinMap;
         this.mapRowLength = mapRowLength;
         this.mapRowHeight = mapRowHeight;
         this.mapPaddingX = mapPaddingX;
@@ -24,6 +25,7 @@ public class Enemy implements Runnable {
     private Terminal terminal;
     private int x, y;
     private Character[][] map;
+    private Character[][]coinMap;
     private int mapPaddingX, mapPaddingY, mapRowLength, mapRowHeight;
     private int level;
     private boolean coordinateContainsCrum = false;
@@ -31,19 +33,19 @@ public class Enemy implements Runnable {
     protected Thread t;
     protected String threadName;
 
-    public int getX() {
+    synchronized public int getX() {
         return x;
     }
 
-    public void setX(int x) {
+    synchronized public void setX(int x) {
         this.x = x;
     }
 
-    public int getY() {
+    synchronized public int getY() {
         return y;
     }
 
-    public void setY(int y) {
+    synchronized public void setY(int y) {
         this.y = y;
     }
 
@@ -55,11 +57,8 @@ public class Enemy implements Runnable {
         for (int j = 0; j < mapRowHeight; j++) {
             for (int i = 0; i < mapRowLength; i++) {
                 if (map[i][j] ==('E')) {
-                    map[i][j] = ' '; //Upptagen nu
                     x = i + mapPaddingX;
                     y = j + mapPaddingY;
-//                    x = (i > 0 ? (i % mapRowLength) : 0) + mapPaddingX;
-//                    y = (i > mapRowLength - 1 ? (i / mapRowLength) : 0) + mapPaddingY;
                     setCharacter();
                     break;
                 }
@@ -67,7 +66,7 @@ public class Enemy implements Runnable {
         }
     }
 
-    private void setCharacter() {
+    synchronized private void setCharacter() {
         try {
             terminal.setCursorPosition(x, y);
             switch (this.getClass().getName()) {
@@ -77,7 +76,7 @@ public class Enemy implements Runnable {
                 case "MediumEnemy":
                     terminal.setForegroundColor(TextColor.ANSI.GREEN);
                     break;
-                case "HadEnemy":
+                case "HardEnemy":
                     terminal.setForegroundColor(TextColor.ANSI.RED);
                     break;
             }
@@ -92,7 +91,7 @@ public class Enemy implements Runnable {
     private void movement() {
     }
 
-    protected int randomizer() {
+    synchronized protected int randomizer() {
         Random rand = new Random();
         int direction = rand.nextInt(4) + 1;
         return direction;
@@ -103,11 +102,11 @@ public class Enemy implements Runnable {
 //        return map[index];
 //    }
 
-    protected boolean move(int gcd, int direction) {
+    synchronized protected boolean move(int gcd, int direction) {
         return move(gcd, direction, false);
     }
 
-    protected boolean move(int gcd, int direction, boolean privileged) {
+    synchronized protected boolean move(int gcd, int direction, boolean privileged) {
         try {
             switch (direction) {
                 case 1: { // upp
@@ -175,33 +174,37 @@ public class Enemy implements Runnable {
         return false;
     }
 
-    private void resetEnemy() {
+    synchronized private void resetEnemy() {
         try {
-//            boolean isCrum = getCoordinateObject(x, y).equals("*") || getCoordinateObject(x, y).equals(".");
+
             terminal.setCursorPosition(x, y);
             terminal.setForegroundColor(TextColor.ANSI.DEFAULT);
-//            terminal.putCharacter(isCrum ? '•' : ' ');
-            terminal.putCharacter(' ');
+            if(coinMap[x-mapPaddingX][y-mapPaddingY] == '*'){
+                terminal.putCharacter('•');
+            }
+            else{
+                terminal.putCharacter(' ');
+            }
             terminal.flush();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private boolean isMovePossible(int x, int y) {
+    synchronized private boolean isMovePossible(int x, int y) {
         return isMovePossible(x, y, false);
     }
 
-    private boolean isMovePossible(int x, int y, boolean privileged) {
+    synchronized private boolean isMovePossible(int x, int y, boolean privileged) {
         int index1 = (x - mapPaddingX);
         int index2 = (y - mapPaddingY);
         char c = map[index1][index2];
-        if (c == ('P') || c == ('E') || c == ('e') || c == ('.') || c == (',') || c == ('^') || (c == ('-') && privileged))
+        if (c == ('P') || c == ('E') || c == (' ') || c == ('.') || c == (',') || c == ('^') || (c == ('-') && privileged))
             return true;
         return false;
     }
 
-    private boolean isCrossing() {
+    synchronized private boolean isCrossing() {
         int index1 = (x - mapPaddingX);
         int index2 = (y - mapPaddingY);
         char c = map[index1][index2];
@@ -211,7 +214,7 @@ public class Enemy implements Runnable {
         return false;
     }
 
-    public boolean isExit() {
+    synchronized public boolean isExit() {
         int index1 = (x - mapPaddingX);
         int index2 = (y - mapPaddingY);
         char c = map[index1][index2];
@@ -221,11 +224,11 @@ public class Enemy implements Runnable {
         return false;
     }
 
-    public int exitNest(int gcd) {
+    synchronized public int exitNest(int gcd) {
         return exitNest(gcd, false);
     }
 
-    public int exitNest(int gcd, boolean hardMode) {
+    synchronized public int exitNest(int gcd, boolean hardMode) {
         int move2 = 0;
         while (!isExit()) {
             move(gcd, 3, true);
@@ -243,12 +246,12 @@ public class Enemy implements Runnable {
         return move2;
     }
 
-    public Coordinates findPlayer() {
+    synchronized public Coordinates findPlayer() {
         Coordinates xy = new Coordinates(Game.p.getX(), Game.p.getY());
         return xy;
     }
 
-    public DirectionResult huntPlayer() {
+    synchronized public DirectionResult huntPlayer() {
         DirectionResult dr = new DirectionResult();
         Coordinates c = findPlayer();
         String directionS = "";
@@ -277,7 +280,7 @@ public class Enemy implements Runnable {
 
         switch (directionS) {
             case "wn":
-                if (isMovePossible(x, y - 1) && isMovePossible(x - 1, y)) {
+                if (isMovePossible(x, y - 1) && isMovePossible(x - 2, y)) {
                     nr = randomizer();
                     if (nr == 1 || nr == 2) {
                         direction = 1;
@@ -285,17 +288,17 @@ public class Enemy implements Runnable {
                         direction = 3;
                 } else if (isMovePossible(x, y - 1)) {
                     direction = 1;
-                } else if (isMovePossible(x - 1, y)) {
+                } else if (isMovePossible(x - 2, y)) {
                     direction = 3;
                 } else {
                     direction = randomizer();
                 }
                 break;
             case "wew":
-                direction = isMovePossible(x - 1, y) ? 3 : randomizer();
+                direction = isMovePossible(x - 2, y) ? 3 : randomizer();
                 break;
             case "ws":
-                if (isMovePossible(x, y + 1) && isMovePossible(x - 1, y)) {
+                if (isMovePossible(x, y + 1) && isMovePossible(x - 2, y)) {
                     nr = randomizer();
                     if (nr == 1 || nr == 2) {
                         direction = 2;
@@ -303,7 +306,7 @@ public class Enemy implements Runnable {
                         direction = 3;
                 } else if (isMovePossible(x, y + 1)) {
                     direction = 2;
-                } else if (isMovePossible(x - 1, y)) {
+                } else if (isMovePossible(x - 2, y)) {
                     direction = 3;
                 } else {
                     direction = randomizer();
@@ -319,7 +322,7 @@ public class Enemy implements Runnable {
                 direction = isMovePossible(x, y + 1) ? 2 : randomizer();
                 break;
             case "en":
-                if (isMovePossible(x, y - 1) && isMovePossible(x + 1, y)) {
+                if (isMovePossible(x, y - 1) && isMovePossible(x + 2, y)) {
                     nr = randomizer();
                     if (nr == 1 || nr == 2) {
                         direction = 1;
@@ -327,22 +330,22 @@ public class Enemy implements Runnable {
                         direction = 4;
                 } else if (isMovePossible(x, y - 1)) {
                     direction = 1;
-                } else if (isMovePossible(x + 1, y)) {
+                } else if (isMovePossible(x + 2, y)) {
                     direction = 4;
                 } else {
                     direction = randomizer();
                 }
             case "eew":
-                direction = isMovePossible(x + 1, y) ? 4 : randomizer();
+                direction = isMovePossible(x + 2, y) ? 4 : randomizer();
                 break;
             case "es":
-                if (isMovePossible(x + 1, y) && isMovePossible(x, y + 1)) {
+                if (isMovePossible(x + 2, y) && isMovePossible(x, y + 1)) {
                     nr = randomizer();
                     if (nr == 1 || nr == 2) {
                         direction = 4;
                     } else
                         direction = 2;
-                } else if (isMovePossible(x + 1, y)) {
+                } else if (isMovePossible(x + 2, y)) {
                     direction = 4;
                 } else if (isMovePossible(x, y + 1)) {
                     direction = 2;

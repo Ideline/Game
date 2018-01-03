@@ -1,20 +1,28 @@
 import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.Terminal;
 
 public class Player {
-    public Player() {
+    public Player(boolean gameRunning) {
         this.terminal = Game.getTerminal();
         this.map = Map.getMap();
+        this.coinMap = Map.getCoinMap();
         this.mapRowLength = Map.getMapRowLength();
         this.mapPaddingX = Map.getMapPaddingX();
         this.mapPaddingY = Map.getMapPaddingY();
         this.mapRowHeight = Map.getMapRowHeight();
+        this.gameRunning = gameRunning;
     }
 
     private Terminal terminal;
     private int x, y;
     private Character[][] map;
+    private Character[][] coinMap;
     private int mapPaddingX, mapPaddingY, mapRowLength, mapRowHeight;
+    private long startTime = 0;
+    private int globalDelay = 200;
+    private boolean gameRunning;
 
     public int getX() {
         return x;
@@ -36,6 +44,52 @@ public class Player {
         }
         setCharacter();
     }
+
+    public void handleInput() {
+        try {
+            KeyStroke ks = terminal.pollInput();
+            if (ks == null)
+                return;
+
+            //Todo: Kanske endast ska implementeras för rörelser...
+            if (System.currentTimeMillis() - startTime < globalDelay)
+                return;
+
+            KeyType kt = ks.getKeyType();
+
+            //Skippa hanteringen av tecken
+            if (kt == KeyType.Character)
+                return;
+
+            switch (kt) {
+                case ArrowUp: {
+                    MoveUp();
+                    break;
+                }
+                case ArrowDown: {
+                    MoveDown();
+                    break;
+                }
+                case ArrowLeft: {
+                    MoveLeft();
+                    break;
+                }
+                case ArrowRight: {
+                    MoveRight();
+                    break;
+                }
+                case Escape: {
+                    gameRunning = false;
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        startTime = System.currentTimeMillis();
+    }
+
 
     public void MoveUp() {
         if (isMovePossible(x, y - 1)) {
@@ -69,7 +123,7 @@ public class Player {
         }
     }
 
-    private void resetPlayer() {
+    synchronized private void resetPlayer() {
         try {
             //Markera att vi har varit här
 //            int index = (x - mapPaddingX) + (y - mapPaddingY) * mapRowLength;
@@ -77,6 +131,9 @@ public class Player {
 //            map[index] = (s.equals(".") || s.equals("!") ? "!" : "^");
             terminal.setCursorPosition(x, y);
             terminal.putCharacter(' ');
+            if(coinMap[x-mapPaddingX][y-mapPaddingY] == '*'){
+                coinMap[x-mapPaddingX][y-mapPaddingY] = ' ';
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

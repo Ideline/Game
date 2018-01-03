@@ -16,6 +16,7 @@ public class Map {
     private static int mapRowLength, mapRowHeight = 0;
     private static int mapPaddingX = 0;
     private static int mapPaddingY = 0;
+    private static boolean coinMode = true;
 
     public static void init() {
         terminal = Game.getTerminal();
@@ -54,6 +55,7 @@ public class Map {
             String tempCoinMap = new String(Files.readAllBytes(Paths.get(path + "/maps/2coin.map")));
             mapRowLength = tempMap.indexOf("\r\n");
             tempMap = tempMap.replace("\r\n", "");
+            tempCoinMap = tempCoinMap.replace("\r\n", "");
             mapRowHeight = tempMap.length() / mapRowLength;
             map = new Character[mapRowLength][mapRowHeight];
             coinMap = new Character[mapRowLength][mapRowHeight];
@@ -75,8 +77,6 @@ public class Map {
             for (int y = 0; y < mapRowHeight; y++) {
                 for (int x = 0; x < mapRowLength; x++) {
 
-//                int y = (i > mapRowLength - 1 ? (i / mapRowLength) : 0) + mapPaddingY;
-//                int x = (i > 0 ? (i % mapRowLength) : 0) + mapPaddingX;
                     terminal.setCursorPosition(x + mapPaddingX, y + mapPaddingY);
 
                     switch (map[x][y]) {
@@ -119,6 +119,16 @@ public class Map {
                             terminal.setForegroundColor(TextColor.ANSI.WHITE);
                             terminal.putCharacter(' ');
                             break;
+                    }
+
+                    if(coinMode) {
+                        terminal.setCursorPosition(x + mapPaddingX, y + mapPaddingY);
+                        switch (coinMap[x][y]) {
+                            case '*':
+                                terminal.setForegroundColor(TextColor.ANSI.WHITE);
+                                terminal.putCharacter('•');
+                                break;
+                        }
                     }
                 }
             }

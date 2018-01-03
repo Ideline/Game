@@ -5,14 +5,17 @@ public class EasyEnemy extends Enemy {
     public EasyEnemy(){}
 
     public EasyEnemy(int level, String threadName) {
-        super(Game.getTerminal(), Map.getMap(), Map.getMapRowLength(), Map.getMapRowHeight(), Map.getMapPaddingX(), Map.getMapPaddingY(), level, threadName);
+        super(Game.getTerminal(), Map.getMap(), Map.getCoinMap(), Map.getMapRowLength(), Map.getMapRowHeight(), Map.getMapPaddingX(), Map.getMapPaddingY(), level, threadName);
     }
 
-    private static boolean inNest = true;
-    private static boolean didMove = true;
-    private static int directionNr = 0;
+    private boolean inNest = true;
+    private boolean didMove = true;
+    private int directionNr = 0;
+    private int gcd = 0;
 
-    public void start() {
+    public void start(int gcd) {
+        this.gcd = gcd;
+
         if(t == null) {
             t = new Thread(this, threadName);
             t.start();
@@ -23,6 +26,7 @@ public class EasyEnemy extends Enemy {
 
     public void run() {
         try {
+            Thread.sleep(gcd);
             while(isRunning) {
                 movement();
             }

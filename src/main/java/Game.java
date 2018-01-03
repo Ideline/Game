@@ -14,19 +14,13 @@ public class Game {
 
     private static boolean gameRunning = true;
     public static Player p = null;
-    private static EasyEnemy e1, e2 = null;
-    private static MediumEnemy e3, e4 = null;
-    private static HardEnemy e5, e6 = null;
+    private static EasyEnemy e1, e2, e3 = null;
+    private static MediumEnemy e4, e5, e6 = null;
+    private static HardEnemy e7, e8, e9 = null;
     private static Terminal terminal = null;
-    private static long startTime = 0;
-    private static int globalDelay = 400;
-//    public static Character[][] map, coinMap = null;
-//    private static int mapRowLength, mapRowHeight = 0;
-//    private static int mapPaddingX = 0;
-//    private static int mapPaddingY = 0;
     private static int level = 1;
 
-    public static Terminal getTerminal() {
+    synchronized public static Terminal getTerminal() {
         return terminal;
     }
 
@@ -45,12 +39,18 @@ public class Game {
 
             switch (level) {
                 case 1:
-                    e5 = new HardEnemy(level, "e5");
                     e1 = new EasyEnemy(level, "e1");
-                    e3 = new MediumEnemy(level, "e3");
-                    e1.start();
-                    e3.start();
-                    e5.start();
+                    e2 = new EasyEnemy(level, "e2");
+                    e3 = new EasyEnemy(level, "e3");
+//                    e4 = new MediumEnemy(level, "e4");
+//                    e5 = new MediumEnemy(level, "e5");
+//                    e6 = new MediumEnemy(level, "e6");
+//                    e7 = new HardEnemy(level, "e7");
+//                    e8 = new HardEnemy(level, "e8");
+//                    e9 = new HardEnemy(level, "e9");
+                    e1.start(0);
+                    e2.start(15000);
+                    e3.start(30000);
                     break;
 //                case 2:
 //                    e1 = new EasyEnemy(terminal, map, mapRowLength, mapRowHeight, mapPaddingX, mapPaddingY, level, "e1");
@@ -69,12 +69,12 @@ public class Game {
             //SkeletonMap sm = new SkeletonMap(terminal, mapRowLength);
             //sm.start();
 
-            p = new Player();
+            p = new Player(gameRunning);
             p.initPlayer();
 
             //Inne i denna loopen ska all logik och uppdateringar ske
             while (gameRunning) {
-                handleInput();
+                p.handleInput();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -88,140 +88,7 @@ public class Game {
             }
         }
     }
-
-    public static void handleInput() {
-        try {
-            KeyStroke ks = terminal.pollInput();
-            if (ks == null)
-                return;
-
-            //Todo: Kanske endast ska implementeras för rörelser...
-            if (System.currentTimeMillis() - startTime < globalDelay)
-                return;
-
-            KeyType kt = ks.getKeyType();
-
-            //Skippa hanteringen av tecken
-            if (kt == KeyType.Character)
-                return;
-
-            switch (kt) {
-                case ArrowUp: {
-                    p.MoveUp();
-                    break;
-                }
-                case ArrowDown: {
-                    p.MoveDown();
-                    break;
-                }
-                case ArrowLeft: {
-                    p.MoveLeft();
-                    break;
-                }
-                case ArrowRight: {
-                    p.MoveRight();
-                    break;
-                }
-                case Escape: {
-                    gameRunning = false;
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        startTime = System.currentTimeMillis();
-    }
-
     public void collisionCheck() {
 
     }
-
-//    public static boolean drawMap() {
-//
-//        String path = Paths.get(".").toAbsolutePath().normalize().toString();
-//
-//        try {
-//            String tempMap = new String(Files.readAllBytes(Paths.get(path + "/maps/2.map")));
-//            String tempCoinMap = new String(Files.readAllBytes(Paths.get(path + "/maps/2coin.map")));
-//            mapRowLength = tempMap.indexOf("\r\n");
-//            tempMap = tempMap.replace("\r\n", "");
-//            mapRowHeight = tempMap.length() / mapRowLength;
-//            map = new Character[mapRowLength][mapRowHeight];
-//            coinMap = new Character[mapRowLength][mapRowHeight];
-//            for (int y = 0; y < mapRowHeight; y++) {
-//                for (int x = 0; x < mapRowLength; x++) {
-//                    int index = x + (y*mapRowLength);
-//                    map[x][y] = tempMap.charAt(index);
-//                    coinMap[x][y] = tempCoinMap.charAt(index);
-//                }
-//            }
-////
-//            if (map.length % mapRowLength != 0) {
-//                throw new Exception("Fel antal tecken i filen.");
-//            }
-//
-//            mapPaddingX = (terminal.getTerminalSize().getColumns() - mapRowLength) / 2;
-//            mapPaddingY = (terminal.getTerminalSize().getRows() - map.length / mapRowLength) / 2;
-//
-//            for (int y = 0; y < mapRowHeight; y++) {
-//                for (int x = 0; x < mapRowLength; x++) {
-//
-////                int y = (i > mapRowLength - 1 ? (i / mapRowLength) : 0) + mapPaddingY;
-////                int x = (i > 0 ? (i % mapRowLength) : 0) + mapPaddingX;
-//                    terminal.setCursorPosition(x, y);
-//
-//                    switch (map[x][y]) {
-//                        case '0':
-//                            terminal.setForegroundColor(TextColor.ANSI.WHITE);
-//                            //terminal.putCharacter('▪');
-//                            terminal.putCharacter(' ');
-//                            break;
-//                        case '1':
-//                            terminal.setForegroundColor(TextColor.ANSI.BLUE);
-//                            terminal.putCharacter('║');
-//                            break;
-//                        case '2':
-//                            terminal.setForegroundColor(TextColor.ANSI.BLUE);
-//                            terminal.putCharacter('═');
-//                            break;
-//                        case '4':
-//                            terminal.setForegroundColor(TextColor.ANSI.BLUE);
-//                            terminal.putCharacter('╗');
-//                            break;
-//                        case '6':
-//                            terminal.setForegroundColor(TextColor.ANSI.BLUE);
-//                            terminal.putCharacter('╝');
-//                            break;
-//                        case '5':
-//                            terminal.setForegroundColor(TextColor.ANSI.BLUE);
-//                            terminal.putCharacter('╚');
-//                            break;
-//                        case '3':
-//                            terminal.setForegroundColor(TextColor.ANSI.BLUE);
-//                            terminal.putCharacter('╔');
-//                            break;
-//                        case '*':
-//                            terminal.setForegroundColor(TextColor.ANSI.WHITE);
-//                            //terminal.setBackgroundColor(TextColor.ANSI.RED);
-//                            terminal.putCharacter('•');
-//                            //terminal.setBackgroundColor(TextColor.ANSI.DEFAULT);
-//                            break;
-//                        case '.':
-//                            terminal.setForegroundColor(TextColor.ANSI.WHITE);
-//                            terminal.putCharacter(' ');
-//                            break;
-//                    }
-//                }
-//            }
-//            terminal.flush();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-//
-//        return true;
-//    }
-
 }
