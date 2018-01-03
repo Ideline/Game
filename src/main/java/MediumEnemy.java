@@ -4,8 +4,8 @@ public class MediumEnemy extends Enemy {
 
     public MediumEnemy(){}
 
-    public MediumEnemy(Terminal terminal, String[] map, int mapRowLength, int mapPaddingX, int mapPaddingY, int level, String threadName) {
-        super(terminal, map, mapRowLength, mapPaddingX, mapPaddingY, level, threadName);
+    public MediumEnemy(int level, String threadName) {
+        super(Game.getTerminal(), Map.getMap(), Map.getMapRowLength(), Map.getMapRowHeight(), Map.getMapPaddingX(), Map.getMapPaddingY(), level, threadName);
     }
 
     private static boolean inNest = true;

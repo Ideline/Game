@@ -2,18 +2,19 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.terminal.Terminal;
 
 public class Player {
-    public Player(Terminal terminal, String[] map, int mapRowLength, int mapPaddingX, int mapPaddingY) {
-        this.terminal = terminal;
-        this.map = map;
-        this.mapRowLength = mapRowLength;
-        this.mapPaddingX = mapPaddingX;
-        this.mapPaddingY = mapPaddingY;
+    public Player() {
+        this.terminal = Game.getTerminal();
+        this.map = Map.getMap();
+        this.mapRowLength = Map.getMapRowLength();
+        this.mapPaddingX = Map.getMapPaddingX();
+        this.mapPaddingY = Map.getMapPaddingY();
+        this.mapRowHeight = Map.getMapRowHeight();
     }
 
     private Terminal terminal;
     private int x, y;
-    private String[] map;
-    private int mapPaddingX, mapPaddingY, mapRowLength;
+    private Character[][] map;
+    private int mapPaddingX, mapPaddingY, mapRowLength, mapRowHeight;
 
     public int getX() {
         return x;
@@ -24,18 +25,20 @@ public class Player {
     }
 
     public void initPlayer() {
-        for(int i = 0; i < map.length; i++){
-            if(map[i].equals("P")){
-                x = (i > 0 ? (i % mapRowLength) : 0) + mapPaddingX;
-                y = (i > mapRowLength-1 ? (i / mapRowLength) : 0) + mapPaddingY;
+        for(int j = 0; j < mapRowHeight; j++) {
+            for (int i = 0; i < mapRowLength; i++) {
+                if (map[i][j] == ('P')) {
+                    x = i + mapPaddingX;
+                    y = j + mapPaddingY;
 
+                }
             }
         }
         setCharacter();
     }
 
     public void MoveUp() {
-        if(isMovePossible(x, y-1)){
+        if (isMovePossible(x, y - 1)) {
             resetPlayer();
             y--;
             setCharacter();
@@ -43,7 +46,7 @@ public class Player {
     }
 
     public void MoveDown() {
-        if(isMovePossible(x, y+1)) {
+        if (isMovePossible(x, y + 1)) {
             resetPlayer();
             y++;
             setCharacter();
@@ -51,7 +54,7 @@ public class Player {
     }
 
     public void MoveLeft() {
-        if(isMovePossible(x-1, y)) {
+        if (isMovePossible(x - 1, y)) {
             resetPlayer();
             x = x - 2;
             setCharacter();
@@ -59,7 +62,7 @@ public class Player {
     }
 
     public void MoveRight() {
-        if(isMovePossible(x+1, y)) {
+        if (isMovePossible(x + 1, y)) {
             resetPlayer();
             x = x + 2;
             setCharacter();
@@ -69,13 +72,12 @@ public class Player {
     private void resetPlayer() {
         try {
             //Markera att vi har varit här
-            int index = (x - mapPaddingX) + (y - mapPaddingY) * mapRowLength;
-            String s = map[index];
-            map[index] = (s.equals(".") || s.equals("!") ? "!" : "^");
+//            int index = (x - mapPaddingX) + (y - mapPaddingY) * mapRowLength;
+//            String s = map[index];
+//            map[index] = (s.equals(".") || s.equals("!") ? "!" : "^");
             terminal.setCursorPosition(x, y);
             terminal.putCharacter(' ');
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -86,17 +88,16 @@ public class Player {
             terminal.setForegroundColor(TextColor.ANSI.YELLOW);
             terminal.putCharacter('☻');
             terminal.flush();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private boolean isMovePossible(int x, int y)
-    {
-        int index = (x - mapPaddingX) + (y - mapPaddingY) * mapRowLength;
-        String s = map[index];
-        if(s.equals("*") || s.equals("+") || s.equals(".") || s.equals("^") || s.equals("!"))
+    private boolean isMovePossible(int x, int y) {
+        int index1 = (x - mapPaddingX);
+        int index2 = (y - mapPaddingY);
+        char c = map[index1][index2];
+        if (c == (' ') || c == ('.'))
             return true;
         return false;
     }
