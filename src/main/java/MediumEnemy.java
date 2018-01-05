@@ -2,10 +2,9 @@ import com.googlecode.lanterna.terminal.Terminal;
 
 public class MediumEnemy extends Enemy {
 
-    public MediumEnemy(){}
-
-    public MediumEnemy(int level, String threadName) {
-        super(Map.getMap(), Map.getCoinMap(), Map.getMapRowLength(), Map.getMapRowHeight(), Map.getMapPaddingX(), Map.getMapPaddingY(), level, threadName);
+    public MediumEnemy() {
+        super(Game.map.getMap(), Game.map.getCoinMap(), Game.map.getMapRowLength(), Game.map.getMapRowHeight(), Game.map.getMapPaddingX(), Game.map.getMapPaddingY(), "medium" + Game.totalBots+1);
+        Game.totalBots++;
     }
 
     private boolean inNest = true;

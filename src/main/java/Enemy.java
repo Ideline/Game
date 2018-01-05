@@ -11,14 +11,13 @@ public class Enemy implements Runnable {
     public Enemy() {
     }
 
-    public Enemy(Character[][] map, Character[][] coinMap, int mapRowLength, int mapRowHeight, int mapPaddingX, int mapPaddingY, int level, String threadName) {
+    public Enemy(Character[][] map, Character[][] coinMap, int mapRowLength, int mapRowHeight, int mapPaddingX, int mapPaddingY, String threadName) {
         this.map = map;
         this.coinMap = coinMap;
         this.mapRowLength = mapRowLength;
         this.mapRowHeight = mapRowHeight;
         this.mapPaddingX = mapPaddingX;
         this.mapPaddingY = mapPaddingY;
-        this.level = level;
         this.isRunning = true;
         this.threadName = threadName;
     }
@@ -27,7 +26,6 @@ public class Enemy implements Runnable {
     private Character[][] map;
     private Character[][]coinMap;
     private int mapPaddingX, mapPaddingY, mapRowLength, mapRowHeight;
-    private int level;
     private boolean coordinateContainsCrum = false;
     protected boolean isRunning;
     protected Thread t;
@@ -80,7 +78,7 @@ public class Enemy implements Runnable {
                 break;
         }
 
-        Game.printToScreen(x, y, 'Ω', tc);
+        Map.printToScreen(x, y, 'Ω', tc);
         caughtPlayer();
     }
 
@@ -175,7 +173,7 @@ public class Enemy implements Runnable {
         if(coinMap != null) {
             c = (coinMap[x-mapPaddingX][y-mapPaddingY] == '*' ? '•' : ' ');
         }
-        Game.printToScreen(x, y, c, TextColor.ANSI.DEFAULT);
+        Map.printToScreen(x, y, c, TextColor.ANSI.DEFAULT);
     }
 
     private boolean isMovePossible(int x, int y) {
@@ -234,7 +232,7 @@ public class Enemy implements Runnable {
     }
 
     public Coordinates findPlayer() {
-        Coordinates xy = new Coordinates(Game.p.getX(), Game.p.getY());
+        Coordinates xy = new Coordinates(Game.player.getX(), Game.player.getY());
         return xy;
     }
 
@@ -355,30 +353,17 @@ public class Enemy implements Runnable {
         int playerY = c.getY();
 
         if(x == playerX && y == playerY) {
+            Game.gameState = GameState.MENU;
             Game.setGameRunning(false);
-            System.out.println("GAME OVER!!!");
+            isRunning = false;
         }
-
-
     }
 
     public void run() {
-//        try {
-//            while(isRunning) {
-//                movement();
-//            }
-//        }
-//        catch(Exception e) {
-//            e.printStackTrace();
-//        }
+
     }
 
     public void start() {
-//        if(t == null) {
-//            t = new Thread(this, threadName);
-//            t.start();
-//        }
-//
-//        initEnemy();
+
     }
 }

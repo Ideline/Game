@@ -1,10 +1,13 @@
-import com.googlecode.lanterna.TerminalPosition;
-import com.googlecode.lanterna.TextCharacter;
-import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.*;
+import com.googlecode.lanterna.graphics.StyleSet;
+import com.googlecode.lanterna.graphics.TextGraphics;
+import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.screen.Screen;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Map {
 
@@ -12,50 +15,56 @@ public class Map {
 
     }
 
-    private static Screen screen;
-    private static Character[][] map, coinMap = null;
-    private static int mapRowLength, mapRowHeight = 0;
-    private static int mapPaddingX = 0;
-    private static int mapPaddingY = 0;
-    private static boolean coinMode = true;
+    private Character[][] map, coinMap = null;
+    private int mapRowLength, mapRowHeight = 0;
+    private int mapPaddingX = 0;
+    private int mapPaddingY = 0;
+    private boolean coinMode = true;
 
-    public static void init(boolean coinMode) throws Exception {
-        screen = Game.getScreen();
+    public void init() throws Exception {
         if (!drawMap())
             throw new Exception("Kunde inte skapa banan.");
-        if(coinMode) {
-            if (!drawCoinMap())
-                throw new Exception("Kunde inte skapa banan.");
+        if(coinMode && !drawCoinMap()) {
+            throw new Exception("Kunde inte skapa banan.");
         }
     }
 
-    public static int getMapPaddingX() {
+    public void setCoinMode(boolean coinMode) {
+        this.coinMode = coinMode;
+    }
+
+    public boolean isCoinMode() {
+        return coinMode;
+    }
+
+    public int getMapPaddingX() {
         return mapPaddingX;
     }
 
-    public static int getMapPaddingY() {
+    public int getMapPaddingY() {
         return mapPaddingY;
     }
 
-    public static Character[][] getCoinMap() {
+    public Character[][] getCoinMap() {
         return coinMap;
     }
 
-    public static Character[][] getMap() {
+    public Character[][] getMap() {
         return map;
     }
 
-    public static int getMapRowHeight() {
+    public int getMapRowHeight() {
         return mapRowHeight;
     }
 
-    public static int getMapRowLength() {
+    public int getMapRowLength() {
         return mapRowLength;
     }
 
-    public static boolean drawMap() {
+    public boolean drawMap() {
 
         String path = Paths.get(".").toAbsolutePath().normalize().toString();
+        Screen screen = Game.getScreen();
 
         try {
             String tempMap = new String(Files.readAllBytes(Paths.get(path + "/maps/2.map")));
@@ -77,11 +86,10 @@ public class Map {
             mapPaddingX = (screen.getTerminalSize().getColumns() / 2) - (mapRowLength / 2);
             mapPaddingY = (screen.getTerminalSize().getRows() / 2) - (mapRowHeight / 2);
 
-            TextColor tc = TextColor.ANSI.WHITE;
-            char c = ' ';
+            char c;
+            TextColor tc;
             for (int y = 0; y < mapRowHeight; y++) {
                 for (int x = 0; x < mapRowLength; x++) {
-
                     switch (map[x][y]) {
                         case '0':
                             tc = TextColor.ANSI.WHITE;
@@ -134,6 +142,7 @@ public class Map {
                     }
                 }
             }
+
             synchronized (screen) {
                 screen.refresh();
             }
@@ -146,9 +155,10 @@ public class Map {
         return true;
     }
 
-    public static boolean drawCoinMap() {
+    public boolean drawCoinMap() {
 
         String path = Paths.get(".").toAbsolutePath().normalize().toString();
+        Screen screen = Game.getScreen();
 
         try {
             String tempCoinMap = new String(Files.readAllBytes(Paths.get(path + "/maps/2coin.map")));
@@ -209,7 +219,27 @@ public class Map {
         return true;
     }
 
-    public static boolean anyCoinsLeft(){
+    public static void drawTimer() throws Exception {
+        Screen screen = Game.getScreen();
+
+        //https://github.com/mabe02/lanterna/blob/master/docs/tutorial/Tutorial03.md
+        String sizeLabel = "" + (System.currentTimeMillis() - Game.startTime);
+        TerminalPosition labelBoxTopLeft = new TerminalPosition(28, 21);
+        TerminalSize labelBoxSize = new TerminalSize(sizeLabel.length() + 2, 1);
+        TextGraphics textGraphics = screen.newTextGraphics();
+
+        http://mabe02.github.io/lanterna/apidocs/3.0/com/googlecode/lanterna/graphics/StyleSet.html
+        textGraphics.setStyleFrom(new StyleSet.Set().enableModifiers(SGR.BOLD).setForegroundColor(TextColor.ANSI.RED));
+        textGraphics.fillRectangle(labelBoxTopLeft, labelBoxSize, ' ');
+
+        textGraphics.putString(labelBoxTopLeft.withRelative(1, 1), sizeLabel);
+
+        synchronized (screen) {
+            screen.refresh();
+        }
+    }
+
+    public boolean anyCoinsLeft(){
 
         int nrCoins = 0;
         for(int j = 0; j < mapRowHeight; j++) {
@@ -224,6 +254,27 @@ public class Map {
         }
         else{
             return false;
+        }
+    }
+
+    public static void printToScreen(int x, int y, char c) throws Exception {
+        printToScreen(x, y, c, null, true);
+    }
+    public static void printToScreen(int x, int y, char c, TextColor tc) throws Exception {
+        printToScreen(x, y, c, tc, true);
+    }
+    public static void printToScreen(int x, int y, char c, TextColor tc, boolean refresh) throws Exception {
+        Screen screen = Game.getScreen();
+        TerminalPosition cellToModify = new TerminalPosition(x, y);
+        TextCharacter characterInBackBuffer = screen.getBackCharacter(cellToModify);
+        if(tc != null)
+            characterInBackBuffer = characterInBackBuffer.withForegroundColor(tc);
+        characterInBackBuffer = characterInBackBuffer.withCharacter(c);
+        if(refresh) {
+            synchronized (screen) {
+                screen.setCharacter(cellToModify, characterInBackBuffer);
+                screen.refresh();
+            }
         }
     }
 }

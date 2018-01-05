@@ -7,15 +7,14 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
 
 public class Player {
-    public Player(boolean gameRunning) {
+    public Player() {
         this.screen = Game.getScreen();
-        this.map = Map.getMap();
-        this.coinMap = Map.getCoinMap();
-        this.mapRowLength = Map.getMapRowLength();
-        this.mapPaddingX = Map.getMapPaddingX();
-        this.mapPaddingY = Map.getMapPaddingY();
-        this.mapRowHeight = Map.getMapRowHeight();
-        this.gameRunning = gameRunning;
+        this.map = Game.map.getMap();
+        this.coinMap = Game.map.getCoinMap();
+        this.mapRowLength = Game.map.getMapRowLength();
+        this.mapPaddingX = Game.map.getMapPaddingX();
+        this.mapPaddingY = Game.map.getMapPaddingY();
+        this.mapRowHeight = Game.map.getMapRowHeight();
     }
 
     private Screen screen;
@@ -25,7 +24,6 @@ public class Player {
     private int mapPaddingX, mapPaddingY, mapRowLength, mapRowHeight;
     private long startTime = 0;
     private int globalDelay = 200;
-    private boolean gameRunning;
 
     public int getX() {
         return x;
@@ -35,7 +33,7 @@ public class Player {
         return y;
     }
 
-    public void initPlayer() throws Exception {
+    public void init() throws Exception {
         for(int j = 0; j < mapRowHeight; j++) {
             for (int i = 0; i < mapRowLength; i++) {
                 if (map[i][j] == ('P')) {
@@ -82,7 +80,8 @@ public class Player {
                     break;
                 }
                 case Escape: {
-                    gameRunning = false;
+                    Game.gameState = GameState.MENU;
+                    Game.setGameRunning(false);
                     break;
                 }
             }
@@ -147,11 +146,11 @@ public class Player {
     }
 
     private void setCharacter() throws Exception {
-        Game.printToScreen(x, y, '☻', TextColor.ANSI.YELLOW);
+        Map.printToScreen(x, y, '☻', TextColor.ANSI.YELLOW);
 
-        if(!Map.anyCoinsLeft()) {
+        if(!Game.map.anyCoinsLeft()) {
+            Game.gameState = GameState.MENU;
             Game.setGameRunning(false);
-            System.out.println("Du vann!");
         }
     }
 

@@ -2,10 +2,9 @@ import com.googlecode.lanterna.terminal.Terminal;
 
 public class EasyEnemy extends Enemy {
 
-    public EasyEnemy(){}
-
-    public EasyEnemy(int level, String threadName) {
-        super(Map.getMap(), Map.getCoinMap(), Map.getMapRowLength(), Map.getMapRowHeight(), Map.getMapPaddingX(), Map.getMapPaddingY(), level, threadName);
+    public EasyEnemy() {
+        super(Game.map.getMap(), Game.map.getCoinMap(), Game.map.getMapRowLength(), Game.map.getMapRowHeight(), Game.map.getMapPaddingX(), Game.map.getMapPaddingY(), "easy" + Game.totalBots+1);
+        Game.totalBots++;
     }
 
     private boolean inNest = true;

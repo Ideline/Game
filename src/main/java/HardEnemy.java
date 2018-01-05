@@ -3,10 +3,9 @@ import com.googlecode.lanterna.terminal.Terminal;
 
 public class HardEnemy extends Enemy {
 
-    public HardEnemy(){}
-
-    public HardEnemy(int level, String threadName) {
-        super(Map.getMap(), Map.getCoinMap(), Map.getMapRowLength(), Map.getMapRowHeight(), Map.getMapPaddingX(), Map.getMapPaddingY(), level, threadName);
+    public HardEnemy() {
+        super(Game.map.getMap(), Game.map.getCoinMap(), Game.map.getMapRowLength(), Game.map.getMapRowHeight(), Game.map.getMapPaddingX(), Game.map.getMapPaddingY(), "hard" + Game.totalBots+1);
+        Game.totalBots++;
     }
 
     private boolean inNest = true;
