@@ -16,18 +16,21 @@ public class Enemies {
         switch (level) {
             case 1:
                 enemies.add(new EasyEnemy());
-                enemies.add(new EasyEnemy());
                 enemies.add(new MediumEnemy());
                 enemies.add(new HardEnemy());
+                enemies.add(new EasyEnemy());
                 break;
             case 2:
                 enemies.add(new EasyEnemy());
-                enemies.add(new EasyEnemy());
                 enemies.add(new MediumEnemy());
+                enemies.add(new HardEnemy());
+                enemies.add(new EasyEnemy());
                 enemies.add(new HardEnemy());
                 break;
             case 3:
                 enemies.add(new EasyEnemy());
+                enemies.add(new MediumEnemy());
+                enemies.add(new HardEnemy());
                 enemies.add(new EasyEnemy());
                 enemies.add(new MediumEnemy());
                 enemies.add(new HardEnemy());

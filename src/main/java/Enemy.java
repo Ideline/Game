@@ -353,7 +353,7 @@ public class Enemy implements Runnable {
         int playerY = c.getY();
 
         if(x == playerX && y == playerY) {
-            Game.gameState = GameState.MENU;
+            Game.gameState = GameState.GAME_OVER;
             Game.setGameRunning(false);
             isRunning = false;
         }

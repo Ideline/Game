@@ -32,7 +32,7 @@ public class Game {
 
     public static void main(String[] args) throws Exception {
         DefaultTerminalFactory defaultTerminalFactory = new DefaultTerminalFactory();
-        defaultTerminalFactory.setInitialTerminalSize(new TerminalSize(140, 60));
+        defaultTerminalFactory.setInitialTerminalSize(new TerminalSize(140, 52));
         defaultTerminalFactory.setTerminalEmulatorTitle("FfakMan 1.0");
 
         map = new Map();
@@ -54,6 +54,12 @@ public class Game {
                     case GAME:
                         gameRunning = true;
                         runGame();
+                        break;
+                    case GAME_WON:
+                        Menu.finishedLevel();
+                        break;
+                    case GAME_OVER:
+                        Menu.gameOver();
                         break;
                 }
             }

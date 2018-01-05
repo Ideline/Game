@@ -127,11 +127,6 @@ public class Player {
 
     private void resetPlayer() {
         try {
-            //Markera att vi har varit här
-//            int index = (x - mapPaddingX) + (y - mapPaddingY) * mapRowLength;
-//            String s = map[index];
-//            map[index] = (s.equals(".") || s.equals("!") ? "!" : "^");
-
             TerminalPosition cellToModify = new TerminalPosition(x, y);
             TextCharacter characterInBackBuffer  = screen.getBackCharacter(cellToModify);
             characterInBackBuffer = characterInBackBuffer.withCharacter(' ');
@@ -149,7 +144,7 @@ public class Player {
         Map.printToScreen(x, y, '☻', TextColor.ANSI.YELLOW);
 
         if(!Game.map.anyCoinsLeft()) {
-            Game.gameState = GameState.MENU;
+            Game.gameState = GameState.GAME_WON;
             Game.setGameRunning(false);
         }
     }

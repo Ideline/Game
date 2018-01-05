@@ -224,7 +224,7 @@ public class Map {
 
         //https://github.com/mabe02/lanterna/blob/master/docs/tutorial/Tutorial03.md
         String sizeLabel = "" + (System.currentTimeMillis() - Game.startTime);
-        TerminalPosition labelBoxTopLeft = new TerminalPosition(28, 21);
+        TerminalPosition labelBoxTopLeft = new TerminalPosition(29, 17);
         TerminalSize labelBoxSize = new TerminalSize(sizeLabel.length() + 2, 1);
         TextGraphics textGraphics = screen.newTextGraphics();
 
