@@ -1,4 +1,5 @@
 public enum GameState {
+    ENTERNAME,//NYTT
     MENU,
     MENU_DIFFICULTY,
     GAME,

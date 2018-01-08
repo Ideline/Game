@@ -170,7 +170,7 @@ public class Enemy implements Runnable {
 
     private void resetEnemy() throws Exception {
         char c = ' ';
-        if(coinMap != null) {
+        if(coinMap != null && Game.map.isCoinMode()) { // NYTT
             c = (coinMap[x-mapPaddingX][y-mapPaddingY] == '*' ? '•' : ' ');
         }
         Map.printToScreen(x, y, c, TextColor.ANSI.DEFAULT);

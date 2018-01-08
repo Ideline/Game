@@ -5,6 +5,7 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
+import com.sun.org.apache.xml.internal.resolver.readers.SAXCatalogReader;
 
 public class Player {
     public Player() {
@@ -80,6 +81,7 @@ public class Player {
                     break;
                 }
                 case Escape: {
+                    Game.stats.resetScore(); // NYTT
                     Game.gameState = GameState.MENU;
                     Game.setGameRunning(false);
                     break;
@@ -134,6 +136,7 @@ public class Player {
 
             if(coinMap != null && coinMap[x-mapPaddingX][y-mapPaddingY] == '*'){
                 coinMap[x-mapPaddingX][y-mapPaddingY] = ' ';
+                Game.map.addCoin();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -143,7 +146,7 @@ public class Player {
     private void setCharacter() throws Exception {
         Map.printToScreen(x, y, '☻', TextColor.ANSI.YELLOW);
 
-        if(!Game.map.anyCoinsLeft()) {
+        if(Game.map.isCoinMode() && !Game.map.anyCoinsLeft()) {  // NYTT
             Game.gameState = GameState.GAME_WON;
             Game.setGameRunning(false);
         }

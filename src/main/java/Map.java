@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Map {
 
     public Map(){
-
     }
 
     private Character[][] map, coinMap = null;
@@ -20,6 +19,33 @@ public class Map {
     private int mapPaddingX = 0;
     private int mapPaddingY = 0;
     private boolean coinMode = true;
+    private int nrCoinsStart = 0; // NYTT
+    private int nrCoinsTaken = 0; // NYTT
+
+    public int getNrCoinsStart() { // NYTT
+        for (int y = 0; y < mapRowHeight; y++) {
+            for (int x = 0; x < mapRowLength; x++) {
+                if(coinMap[x][y] == '*') nrCoinsStart++;
+            }
+        }
+        return nrCoinsStart;
+    }
+
+    public int getNrCoinsTaken() { // NYTT
+        return nrCoinsTaken;
+    }
+
+    public void setNrCoinsTaken(int nrCoinsTaken) {
+        this.nrCoinsTaken = nrCoinsTaken;
+    }
+
+    public boolean isCoinmode(){ // NYTT
+        return coinMode;
+    }
+
+    public void addCoin(){ // NYTT
+        nrCoinsTaken++;
+    }
 
     public void init() throws Exception {
         if (!drawMap())
@@ -67,7 +93,7 @@ public class Map {
         Screen screen = Game.getScreen();
 
         try {
-            String tempMap = new String(Files.readAllBytes(Paths.get(path + "/maps/2.map")));
+            String tempMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map2/2.map"))); // NYTT
             mapRowLength = tempMap.indexOf("\r\n");
             tempMap = tempMap.replace("\r\n", "");
             mapRowHeight = tempMap.length() / mapRowLength;
@@ -161,7 +187,7 @@ public class Map {
         Screen screen = Game.getScreen();
 
         try {
-            String tempCoinMap = new String(Files.readAllBytes(Paths.get(path + "/maps/2coin.map")));
+            String tempCoinMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map2/2coin.map"))); // NYTT
             mapRowLength = tempCoinMap.indexOf("\r\n");
             tempCoinMap = tempCoinMap.replace("\r\n", "");
             mapRowHeight = tempCoinMap.length() / mapRowLength;
@@ -219,20 +245,25 @@ public class Map {
         return true;
     }
 
-    public static void drawTimer() throws Exception {
+    public static void drawMapStats() throws Exception { // NYTT
         Screen screen = Game.getScreen();
-
+        Game.stats.setMapScore(); // NYTT
         //https://github.com/mabe02/lanterna/blob/master/docs/tutorial/Tutorial03.md
-        String sizeLabel = "" + (System.currentTimeMillis() - Game.startTime);
+        String timeLabel = Statistics.formateTime(Game.stats.getMapTime()); // NYTT
+        String pointsLabel = "" + Game.stats.getMapScore(); // NYTT
         TerminalPosition labelBoxTopLeft = new TerminalPosition(29, 17);
-        TerminalSize labelBoxSize = new TerminalSize(sizeLabel.length() + 2, 1);
+        TerminalSize labelBoxSize = new TerminalSize(timeLabel.length() + 2 + pointsLabel.length(), 1); // NYTT
         TextGraphics textGraphics = screen.newTextGraphics();
 
-        http://mabe02.github.io/lanterna/apidocs/3.0/com/googlecode/lanterna/graphics/StyleSet.html
+        //http://mabe02.github.io/lanterna/apidocs/3.0/com/googlecode/lanterna/graphics/StyleSet.html // NYTT
         textGraphics.setStyleFrom(new StyleSet.Set().enableModifiers(SGR.BOLD).setForegroundColor(TextColor.ANSI.RED));
         textGraphics.fillRectangle(labelBoxTopLeft, labelBoxSize, ' ');
 
-        textGraphics.putString(labelBoxTopLeft.withRelative(1, 1), sizeLabel);
+        if(Game.map.isCoinMode()){ // NYTT
+            textGraphics.putString(labelBoxTopLeft.withRelative(1, 1), "time: " + timeLabel + " score: " + pointsLabel); // NYTT
+        }
+        else textGraphics.putString(labelBoxTopLeft.withRelative(1, 1), "time: " + timeLabel);
+
 
         synchronized (screen) {
             screen.refresh();

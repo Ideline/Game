@@ -2,6 +2,8 @@ import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
+import com.googlecode.lanterna.gui2.WindowBasedTextGUI;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
@@ -16,11 +18,17 @@ public class Game {
     public static Player player = null;
     private static Screen screen = null;
     private static int level = 1;
-    public static GameState gameState = GameState.MENU;
+    public static GameState gameState = GameState.ENTERNAME; // NYTT
     public static Map map = null;
     public static Enemies enemies = null;
     public static int totalBots = 0;
     public static long startTime;
+    public static Statistics stats; // NYTT
+    public static Highscore highscore; // NYTT
+    public static WindowBasedTextGUI textGUI = null; // NYTT
+    public static String playerName = "";
+
+
 
     public static Screen getScreen() {
         return screen;
@@ -36,15 +44,21 @@ public class Game {
         defaultTerminalFactory.setTerminalEmulatorTitle("FfakMan 1.0");
 
         map = new Map();
+        stats = new Statistics(); // NYTT
+        highscore = new Highscore(); // NYTT
 
         try {
             Terminal terminal = defaultTerminalFactory.createTerminal();
             //terminal.setCursorVisible(false);
             screen = new TerminalScreen(terminal);
+            textGUI = new MultiWindowTextGUI(screen); // NYTT
             screen.startScreen();
 
             while(gameState != GameState.EXIT) {
                 switch(gameState) {
+                    case ENTERNAME: // NYTT
+                        Menu.enterPlayerName();
+                        break;
                     case MENU:
                         Menu.createMenu();
                         break;
@@ -60,6 +74,9 @@ public class Game {
                         break;
                     case GAME_OVER:
                         Menu.gameOver();
+                        break;
+                    case HIGHSCORE:
+                        Menu.highscoreMenu();
                         break;
                 }
             }
@@ -83,6 +100,10 @@ public class Game {
 
         startTime = System.currentTimeMillis();
 
+        highscore.createHighscoreLists(); // NYTT
+
+        // metod för att slumpa fram map
+
         Game.map.init();
 
         player = new Player();
@@ -94,7 +115,7 @@ public class Game {
 
         while (gameRunning) {
             player.handleInput();
-            map.drawTimer();
+            map.drawMapStats(); // NYTT
         }
 
         for(Enemy e : enemies.getEnemies()) {
