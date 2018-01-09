@@ -29,6 +29,8 @@ public class Highscore{
 
     public void createHighscoreLists(){
         try {
+            mapHighscore = new ArrayList<HighscoreEntry>();
+            totalHighscore = new ArrayList<HighscoreEntry>();
             String path = Paths.get(".").toAbsolutePath().normalize().toString();
             String tempMapHighscore = new String(Files.readAllBytes(Paths.get(path + "/maps/map2/2mapScoreEasy.map")));
             String tempTotalHighscore = new String(Files.readAllBytes(Paths.get(path + "/maps/totalHighscoreEasy.map")));

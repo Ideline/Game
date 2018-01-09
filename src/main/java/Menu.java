@@ -359,6 +359,8 @@ public class Menu {
         Screen screen = Game.getScreen();
         screen.clear();
         screen.setCursorPosition(null);
+        String mapHighscore = "";
+        String totalHighscore = "";
 
         //AtomicBoolean är en boolean som är trådsäker
         final AtomicBoolean stop = new AtomicBoolean(false);
@@ -370,8 +372,8 @@ public class Menu {
         //Vart vill vi skriva menyn på skärmen?
         int columnPosition = screen.getTerminalSize().getColumns() / 2 - 35/2;
         int rowPosition = screen.getTerminalSize().getRows() / 2 - 20;
-        String mapHighscore = Game.highscore.toString(Game.highscore.getMapHighscore());
-        String totalHighscore = Game.highscore.toString(Game.highscore.getTotalHighscore());
+        mapHighscore = Game.highscore.toString(Game.highscore.getMapHighscore());
+        totalHighscore = Game.highscore.toString(Game.highscore.getTotalHighscore());
 
         Label l1 = new Label("HIGHSCORE ON THIS MAP!!!");
         Label l2 = new Label(mapHighscore);

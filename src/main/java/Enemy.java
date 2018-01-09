@@ -77,9 +77,8 @@ public class Enemy implements Runnable {
                 tc = TextColor.ANSI.RED;
                 break;
         }
-
-        Map.printToScreen(x, y, 'Ω', tc);
         caughtPlayer();
+        Map.printToScreen(x, y, 'Ω', tc);
     }
 
     private void movement() {
@@ -106,6 +105,7 @@ public class Enemy implements Runnable {
                 case 1: { // upp
                     if (isMovePossible(x, y - 1, privileged)) {
                         Thread.sleep(gcd);
+                        caughtPlayer();
                         resetEnemy();
                         y--;
                         setCharacter();
@@ -120,6 +120,7 @@ public class Enemy implements Runnable {
                 case 2: { // ner
                     if (isMovePossible(x, y + 1, privileged)) {
                         Thread.sleep(gcd);
+                        caughtPlayer();
                         resetEnemy();
                         y++;
                         setCharacter();
@@ -134,6 +135,7 @@ public class Enemy implements Runnable {
                 case 3: { // vänster
                     if (isMovePossible(x - 2, y, privileged)) {
                         Thread.sleep(gcd);
+                        caughtPlayer();
                         resetEnemy();
                         x = x - 2;
                         setCharacter();
@@ -148,6 +150,7 @@ public class Enemy implements Runnable {
                 case 4: { // höger
                     if (isMovePossible(x + 2, y, privileged)) {
                         Thread.sleep(gcd);
+                        caughtPlayer();
                         resetEnemy();
                         x = x + 2;
                         setCharacter();
@@ -352,7 +355,8 @@ public class Enemy implements Runnable {
         int playerX = c.getX();
         int playerY = c.getY();
 
-        if(x == playerX && y == playerY) {
+        if(x == playerX && y == playerY && Game.gameState != GameState.GAME_OVER) {
+
             Game.gameState = GameState.GAME_OVER;
             Game.setGameRunning(false);
             isRunning = false;

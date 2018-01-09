@@ -4,8 +4,6 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
-import com.googlecode.lanterna.terminal.Terminal;
-import com.sun.org.apache.xml.internal.resolver.readers.SAXCatalogReader;
 
 public class Player {
     public Player() {
@@ -155,6 +153,7 @@ public class Player {
     private boolean isMovePossible(int x, int y) {
         int index1 = (x - mapPaddingX);
         int index2 = (y - mapPaddingY);
+
         char c = map[index1][index2];
         if (c == (' ') || c == ('.'))
             return true;
