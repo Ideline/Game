@@ -93,7 +93,7 @@ public class Map {
         Screen screen = Game.getScreen();
 
         try {
-            String tempMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map2/2.map"))); // NYTT
+            String tempMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map6/6.map"))); // NYTT
             mapRowLength = tempMap.indexOf("\r\n");
             tempMap = tempMap.replace("\r\n", "");
             mapRowHeight = tempMap.length() / mapRowLength;
@@ -187,7 +187,7 @@ public class Map {
         Screen screen = Game.getScreen();
 
         try {
-            String tempCoinMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map2/2coin.map"))); // NYTT
+            String tempCoinMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map6/6coin.map"))); // NYTT
             mapRowLength = tempCoinMap.indexOf("\r\n");
             tempCoinMap = tempCoinMap.replace("\r\n", "");
             mapRowHeight = tempCoinMap.length() / mapRowLength;
@@ -247,11 +247,11 @@ public class Map {
 
     public static void drawMapStats() throws Exception { // NYTT
         Screen screen = Game.getScreen();
-        Game.stats.setMapScore(); // NYTT
+            Game.stats.setMapScore(); // NYTT
         //https://github.com/mabe02/lanterna/blob/master/docs/tutorial/Tutorial03.md
         String timeLabel = Statistics.formateTime(Game.stats.getMapTime()); // NYTT
         String pointsLabel = "" + Game.stats.getMapScore(); // NYTT
-        TerminalPosition labelBoxTopLeft = new TerminalPosition(29, 17);
+        TerminalPosition labelBoxTopLeft = new TerminalPosition(1, 0);
         TerminalSize labelBoxSize = new TerminalSize(timeLabel.length() + 2 + pointsLabel.length(), 1); // NYTT
         TextGraphics textGraphics = screen.newTextGraphics();
 

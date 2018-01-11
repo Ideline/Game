@@ -45,7 +45,6 @@ public class HardEnemy extends Enemy {
             didMove = move(400, direction);
         }
         else {
-
             DirectionResult dr = huntPlayer();
             direction = dr.getDirection();
             didMove = dr.getDidMove();

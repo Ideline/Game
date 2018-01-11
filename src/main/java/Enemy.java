@@ -103,64 +103,104 @@ public class Enemy implements Runnable {
         try {
             switch (direction) {
                 case 1: { // upp
-                    if (isMovePossible(x, y - 1, privileged)) {
-                        Thread.sleep(gcd);
-                        caughtPlayer();
-                        resetEnemy();
-                        y--;
-                        setCharacter();
-                        if (isCrossing()) {
+                    if(y - 1 - mapPaddingY <= mapRowHeight && y - 1 - mapPaddingY >= 0) {
+                        if (isPortal(x, y - 1)) {
+                            if(isPlayerOnPortal(x, y -1)){
+                                gameOver();
+                                return false;
+                            }
+                            moveToPortal(x, y - 1);
+                            return true;
+                        } else if (isMovePossible(x, y - 1, privileged)) {
+                            Thread.sleep(gcd);
+                            caughtPlayer();
+                            resetEnemy();
+                            y--;
+                            setCharacter();
+                            if (isCrossing()) {
+                                return false;
+                            }
+                            return true;
+                        } else {
                             return false;
                         }
-                        return true;
-                    } else {
-                        return false;
                     }
+                    else moveToPortal(x, y - 1);
                 }
                 case 2: { // ner
-                    if (isMovePossible(x, y + 1, privileged)) {
-                        Thread.sleep(gcd);
-                        caughtPlayer();
-                        resetEnemy();
-                        y++;
-                        setCharacter();
-                        if (isCrossing()) {
+                    if(y + 1 - mapPaddingY <= mapRowHeight && y + 1 - mapPaddingY >= 0) {
+                        if (isPortal(x, y + 1)) {
+                            if(isPlayerOnPortal(x, y + 1)){
+                                gameOver();
+                                return false;
+                            }
+                            moveToPortal(x, y + 1);
+                            return true;
+                        } else if (isMovePossible(x, y + 1, privileged)) {
+                            Thread.sleep(gcd);
+                            caughtPlayer();
+                            resetEnemy();
+                            y++;
+                            setCharacter();
+                            if (isCrossing()) {
+                                return false;
+                            }
+                            return true;
+                        } else {
                             return false;
                         }
-                        return true;
-                    } else {
-                        return false;
                     }
+                    else moveToPortal(x, y + 1);
                 }
                 case 3: { // vänster
-                    if (isMovePossible(x - 2, y, privileged)) {
-                        Thread.sleep(gcd);
-                        caughtPlayer();
-                        resetEnemy();
-                        x = x - 2;
-                        setCharacter();
-                        if (isCrossing()) {
+                    if(x - 2 - mapPaddingX <= mapRowLength && x - 2 - mapPaddingX >= 0) {
+                        if (isPortal(x - 2, y)) {
+                            if(isPlayerOnPortal(x - 2, y)){
+                                gameOver();
+                                return false;
+                            }
+                            moveToPortal(x - 2, y);
+                            return true;
+                        } else if (isMovePossible(x - 2, y, privileged)) {
+                            Thread.sleep(gcd);
+                            caughtPlayer();
+                            resetEnemy();
+                            x = x - 2;
+                            setCharacter();
+                            if (isCrossing()) {
+                                return false;
+                            }
+                            return true;
+                        } else {
                             return false;
                         }
-                        return true;
-                    } else {
-                        return false;
                     }
+                    else moveToPortal(x - 2, y);
                 }
                 case 4: { // höger
-                    if (isMovePossible(x + 2, y, privileged)) {
-                        Thread.sleep(gcd);
-                        caughtPlayer();
-                        resetEnemy();
-                        x = x + 2;
-                        setCharacter();
-                        if (isCrossing()) {
+                    if(x + 2 - mapPaddingX <= mapRowLength && x + 2 - mapPaddingX >= 0) {
+                        if (isPortal(x + 2, y)) {
+                            if(isPlayerOnPortal(x + 2, y)){
+                                gameOver();
+                                return false;
+                            }
+                            moveToPortal(x + 2, y);
+                            return true;
+                        } else if (isMovePossible(x + 2, y, privileged)) {
+                            Thread.sleep(gcd);
+                            caughtPlayer();
+                            resetEnemy();
+                            x = x + 2;
+                            setCharacter();
+                            if (isCrossing()) {
+                                return false;
+                            }
+                            return true;
+                        } else {
                             return false;
                         }
-                        return true;
-                    } else {
-                        return false;
                     }
+                    else moveToPortal(x + 2, y);
                 }
                 default:
                     return true;
@@ -187,9 +227,41 @@ public class Enemy implements Runnable {
         int index1 = (x - mapPaddingX);
         int index2 = (y - mapPaddingY);
         char c = map[index1][index2];
-        if (c == ('P') || c == ('E') || c == (' ') || c == ('.') || c == (',') || c == ('^') || (c == ('-') && privileged))
+        if (c == ('P') || c == ('E') || c == (' ') || c == ('.') || c == (',') || c == ('^') || c == ('A') || c == ('B')|| c == ('C')|| c == ('D') || (c == ('-') && privileged) || c == ('Q'))
             return true;
         return false;
+    }
+
+    private boolean isPortal(int x, int y){
+        int index1 = (x - mapPaddingX);
+        int index2 = (y - mapPaddingY);
+        char c = map[index1][index2];
+        if (c == ('Q')) return true;
+        return false;
+    }
+
+    private boolean isPlayerOnPortal(int moveX, int moveY){
+        Coordinates xy = findPlayer();
+        int playerX = xy.getX();
+        int playerY = xy.getY();
+        if (playerX == moveX && playerY == moveY) {
+            return true;
+        }
+        return false;
+    }
+
+    private void moveToPortal(int moveX, int moveY) throws Exception {
+        for (int j = 0; j < mapRowHeight; j++) {
+            for (int i = 0; i < mapRowLength; i++) {
+                if (map[i][j] ==('Q') && (i + mapPaddingX != moveX || j + mapPaddingY != moveY)) {
+                    resetEnemy();
+                    x = i + mapPaddingX;
+                    y = j + mapPaddingY;
+                    setCharacter();
+                    break;
+                }
+            }
+        }
     }
 
     private boolean isCrossing() {
@@ -361,6 +433,12 @@ public class Enemy implements Runnable {
             Game.setGameRunning(false);
             isRunning = false;
         }
+    }
+
+    private void gameOver(){
+        Game.gameState = GameState.GAME_OVER;
+        Game.setGameRunning(false);
+        isRunning = false;
     }
 
     public void run() {

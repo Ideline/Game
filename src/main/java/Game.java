@@ -27,8 +27,11 @@ public class Game {
     public static Highscore highscore; // NYTT
     public static WindowBasedTextGUI textGUI = null; // NYTT
     public static String playerName = "";
+    public static Specials s;
 
-
+    public static boolean isGameRunning() {
+        return gameRunning;
+    }
 
     public static Screen getScreen() {
         return screen;
@@ -109,9 +112,14 @@ public class Game {
         player = new Player();
         player.init();
 
-        enemies = new Enemies();
-        Game.enemies.init(level);
-        Game.enemies.create();
+//        enemies = new Enemies();
+//        Game.enemies.init(level);
+//        Game.enemies.create();
+
+        s = new Specials("mainSpecial");
+        s.createSpawnPoints();
+        s.makeSpecial();
+        s.start();
 
         while (gameRunning) {
             player.handleInput();

@@ -10,9 +10,9 @@ import java.io.IOException;
 public class Highscore{
 
     public Highscore(){
-       this.mapHighscore = new ArrayList<HighscoreEntry>();
-       this.totalHighscore = new ArrayList<HighscoreEntry>();
-       this.level = level;
+//       this.mapHighscore = new ArrayList<HighscoreEntry>();
+//       this.totalHighscore = new ArrayList<HighscoreEntry>();
+//       this.level = level;
     }
 
     private ArrayList<HighscoreEntry> mapHighscore;

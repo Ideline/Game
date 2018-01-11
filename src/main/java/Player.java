@@ -23,6 +23,11 @@ public class Player {
     private int mapPaddingX, mapPaddingY, mapRowLength, mapRowHeight;
     private long startTime = 0;
     private int globalDelay = 200;
+    public static boolean reverse = false;
+
+    public void setGlobalDelay(int globalDelay) {
+        this.globalDelay = globalDelay;
+    }
 
     public int getX() {
         return x;
@@ -63,19 +68,23 @@ public class Player {
 
             switch (kt) {
                 case ArrowUp: {
-                    MoveUp();
+                    if(reverse)MoveDown();
+                    else MoveUp();
                     break;
                 }
                 case ArrowDown: {
-                    MoveDown();
+                    if(reverse)MoveUp();
+                    else MoveDown();
                     break;
                 }
                 case ArrowLeft: {
-                    MoveLeft();
+                    if(reverse) MoveRight();
+                    else MoveLeft();
                     break;
                 }
                 case ArrowRight: {
-                    MoveRight();
+                    if(reverse) MoveLeft();
+                    else MoveRight();
                     break;
                 }
                 case Escape: {
@@ -92,37 +101,54 @@ public class Player {
         startTime = System.currentTimeMillis();
     }
 
-
     public void MoveUp() throws Exception {
-        if (isMovePossible(x, y - 1)) {
-            resetPlayer();
-            y--;
-            setCharacter();
+        gotSpecial(x, y - 1);
+        if(y - 1 - mapPaddingY <= mapRowHeight && y - 1 - mapPaddingY >= 0) {
+            if (isPortal(x, y - 1)) {
+                moveToPortal(x, y - 1);
+            } else if (isMovePossible(x, y - 1)) {
+                resetPlayer();
+                y--;
+                setCharacter();
+            }
         }
+        else moveToPortal(x, y - 1);
     }
 
     public void MoveDown() throws Exception {
-        if (isMovePossible(x, y + 1)) {
-            resetPlayer();
-            y++;
-            setCharacter();
+        gotSpecial(x, y + 1);
+        if(y + 1 - mapPaddingY <= mapRowHeight && y + 1 - mapPaddingY >= 0) {
+            if (isPortal(x, y + 1)) {
+                moveToPortal(x, y + 1);
+            } else if (isMovePossible(x, y + 1)) {
+                resetPlayer();
+                y++;
+                setCharacter();
+            }
         }
+        else moveToPortal(x, y + 1);
     }
 
     public void MoveLeft() throws Exception {
-        if (isMovePossible(x - 1, y)) {
-            resetPlayer();
-            x = x - 2;
-            setCharacter();
-        }
+            gotSpecial(x - 2, y);
+            if (isPortal(x - 2, y)) {
+                moveToPortal(x - 2, y);
+            } else if (isMovePossible(x - 2, y)) {
+                resetPlayer();
+                x = x - 2;
+                setCharacter();
+            }
     }
 
     public void MoveRight() throws Exception {
-        if (isMovePossible(x + 1, y)) {
-            resetPlayer();
-            x = x + 2;
-            setCharacter();
-        }
+        gotSpecial(x + 2, y);
+            if (isPortal(x + 2, y)) {
+                moveToPortal(x + 2, y);
+            } else if (isMovePossible(x + 2, y)) {
+                resetPlayer();
+                x = x + 2;
+                setCharacter();
+            }
     }
 
     private void resetPlayer() {
@@ -141,6 +167,29 @@ public class Player {
         }
     }
 
+    private void gotSpecial(int moveX, int moveY) throws Exception{
+        TextCharacter tc = Game.getScreen().getFrontCharacter(moveX, moveY);
+        char c = tc.getCharacter();
+            switch (c){
+                case 'S':
+                    Buffs b = new Buffs();
+                    b.setRunSpeed(true);
+                    b.start();
+                    break;
+                case 'R':
+                    if(reverse){
+                        reverse = false;
+                    }
+                    else {
+                        reverse = true;
+                        Buffs b2 = new Buffs();
+                        b2.setReverse(true);
+                        b2.start();
+                    }
+                    break;
+            }
+    }
+
     private void setCharacter() throws Exception {
         Map.printToScreen(x, y, '☻', TextColor.ANSI.YELLOW);
 
@@ -150,12 +199,59 @@ public class Player {
         }
     }
 
+    private boolean isPortal(int x, int y){
+        if(x - mapPaddingX < mapRowLength && x - mapPaddingX >= 0 && y - mapPaddingY < mapRowHeight && y - mapPaddingY >= 0) {
+            int index1 = (x - mapPaddingX);
+            int index2 = (y - mapPaddingY);
+            char c = map[index1][index2];
+            if (c == ('Q')) return true;
+            else return false;
+        }
+        else{
+            try {
+                moveToOtherPortal();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    private void moveToPortal(int moveX, int moveY) throws Exception {
+        for (int j = 0; j < mapRowHeight; j++) {
+            for (int i = 0; i < mapRowLength; i++) {
+                if (map[i][j] ==('Q') && (i + mapPaddingX != moveX || j + mapPaddingY != moveY)) {
+                    resetPlayer();
+                    x = i + mapPaddingX;
+                    y = j + mapPaddingY;
+                    setCharacter();
+                    return;
+                }
+            }
+        }
+    }
+
+    private void moveToOtherPortal()throws Exception{
+        for (int j = 0; j < mapRowHeight; j++) {
+            for (int i = 0; i < mapRowLength; i++) {
+                if (map[i][j] ==('Q') && (i + mapPaddingX != x || j + mapPaddingY != y)) {
+                    resetPlayer();
+                    x = i + mapPaddingX;
+                    y = j + mapPaddingY;
+                    setCharacter();
+                    return;
+                }
+            }
+        }
+    }
+
     private boolean isMovePossible(int x, int y) {
         int index1 = (x - mapPaddingX);
         int index2 = (y - mapPaddingY);
 
         char c = map[index1][index2];
-        if (c == (' ') || c == ('.'))
+        if (c == (' ') || c == ('.') || c == ('A') || c == ('B') || c == ('C') || c == ('D') || c == ('Q') || c == ('P') || c == ('E') || c == (','))
             return true;
         return false;
     }
