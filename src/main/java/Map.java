@@ -93,8 +93,8 @@ public class Map {
         Screen screen = Game.getScreen();
 
         try {
-            String tempMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map6/6.map"))); // NYTT
-            mapRowLength = tempMap.indexOf("\r\n");
+            String tempMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map1/1.map"))); // NYTT
+                mapRowLength = tempMap.indexOf("\r\n");
             tempMap = tempMap.replace("\r\n", "");
             mapRowHeight = tempMap.length() / mapRowLength;
             map = new Character[mapRowLength][mapRowHeight];
@@ -187,7 +187,7 @@ public class Map {
         Screen screen = Game.getScreen();
 
         try {
-            String tempCoinMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map6/test.map"))); // NYTT
+            String tempCoinMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map1/1coin.map"))); // NYTT
             mapRowLength = tempCoinMap.indexOf("\r\n");
             tempCoinMap = tempCoinMap.replace("\r\n", "");
             mapRowHeight = tempCoinMap.length() / mapRowLength;

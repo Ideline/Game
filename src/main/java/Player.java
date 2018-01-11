@@ -43,10 +43,16 @@ public class Player {
     public void init() throws Exception {
         for (int j = 0; j < mapRowHeight; j++) {
             for (int i = 0; i < mapRowLength; i++) {
-                if (map[i][j] == ('P')) {
-                    x = i + mapPaddingX;
-                    y = j + mapPaddingY;
-
+                try {
+                    if (map[i][j] == ('P')) {
+                        x = i + mapPaddingX;
+                        y = j + mapPaddingY;
+                        int bajs = 0;
+                    }
+                }
+                catch (Exception e){
+                    int bajs = 0;
+                    e.printStackTrace();
                 }
             }
         }
