@@ -14,7 +14,7 @@ public class Specials implements Runnable{
     private Coordinates[] spawnPoints;
     private Thread t;
     private String threadName;
-
+    private TextColor color = TextColor.ANSI.DEFAULT;
 
     public ArrayList<Character> getSpecials() {
         return specials;
@@ -40,21 +40,54 @@ public class Specials implements Runnable{
         }
     }
 
+    public void setColor(TextColor color) {
+        this.color = color;
+    }
+
+    private void setColor(int roll){
+        char c = specials.get(roll);
+        switch (c){
+            case 'S':
+                color = TextColor.ANSI.BLUE;
+                break;
+            case 'R':
+                color = TextColor.ANSI.MAGENTA;
+                break;
+            case 'C':
+                color = TextColor.ANSI.RED;
+                break;
+            case 'W':
+                color = TextColor.ANSI.CYAN;
+                break;
+            case '$':
+                color = TextColor.ANSI.GREEN;
+                break;
+        }
+    }
 
     public void makeSpecial(){
         specials.add('S');
         specials.add('R');
-//        specials.add('C');
-//        specials.add('D');
+        specials.add('C');
+        specials.add('W');
+        specials.add('$');
     }
+
+
 
     private void drawSpecial() throws Exception{
         Thread.sleep(10000);
         int nrSpecials = specials.size();
         Random r = new Random();
         int roll = r.nextInt(nrSpecials);
+        setColor(roll);
         int index = randomizeSpawnPoint();
-        Map.printToScreen(spawnPoints[index].getX() + Game.map.getMapPaddingX(), spawnPoints[index].getY() + Game.map.getMapPaddingY(), specials.get(roll), TextColor.ANSI.GREEN);
+        try {
+            Map.printToScreen(spawnPoints[index].getX() + Game.map.getMapPaddingX(), spawnPoints[index].getY() + Game.map.getMapPaddingY(), specials.get(roll), color);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void createSpawnPoints(){
@@ -69,8 +102,8 @@ public class Specials implements Runnable{
         spawnPoints = new Coordinates[nrSpawnPoints];
         int index = 0;
 
-        for (int y = 1; y < Game.map.getMapRowHeight(); y++) {
-            for (int x = 10; x < Game.map.getMapRowLength(); x++) {
+        for (int y = 0; y < Game.map.getMapRowHeight(); y++) {
+            for (int x = 0; x < Game.map.getMapRowLength(); x++) {
                 if(Game.map.getMap()[x][y] == '.'){
                     spawnPoints[index] = new Coordinates(x, y);
                     index++;

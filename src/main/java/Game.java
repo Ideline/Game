@@ -112,9 +112,9 @@ public class Game {
         player = new Player();
         player.init();
 
-//        enemies = new Enemies();
-//        Game.enemies.init(level);
-//        Game.enemies.create();
+        enemies = new Enemies();
+        Game.enemies.init(level);
+        Game.enemies.create();
 
         s = new Specials("mainSpecial");
         s.createSpawnPoints();

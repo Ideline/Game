@@ -54,6 +54,14 @@ public class Statistics {
         totalScore = totalScore + mapScore;;
     }
 
+    public void setBonusPoints(int bonusPoints) {
+        this.bonusPoints = bonusPoints;
+    }
+
+    public int getBonusPoints() {
+        return bonusPoints;
+    }
+
     public static String formateTime(long time){
 
         String min, sec, ten;

@@ -24,6 +24,9 @@ public class Player {
     private long startTime = 0;
     private int globalDelay = 200;
     public static boolean reverse = false;
+    public static boolean cherryMode = false;
+    public static boolean wallWalker = false;
+    public static boolean speedBuff = false;
 
     public void setGlobalDelay(int globalDelay) {
         this.globalDelay = globalDelay;
@@ -38,7 +41,7 @@ public class Player {
     }
 
     public void init() throws Exception {
-        for(int j = 0; j < mapRowHeight; j++) {
+        for (int j = 0; j < mapRowHeight; j++) {
             for (int i = 0; i < mapRowLength; i++) {
                 if (map[i][j] == ('P')) {
                     x = i + mapPaddingX;
@@ -68,22 +71,22 @@ public class Player {
 
             switch (kt) {
                 case ArrowUp: {
-                    if(reverse)MoveDown();
+                    if (reverse) MoveDown();
                     else MoveUp();
                     break;
                 }
                 case ArrowDown: {
-                    if(reverse)MoveUp();
+                    if (reverse) MoveUp();
                     else MoveDown();
                     break;
                 }
                 case ArrowLeft: {
-                    if(reverse) MoveRight();
+                    if (reverse) MoveRight();
                     else MoveLeft();
                     break;
                 }
                 case ArrowRight: {
-                    if(reverse) MoveLeft();
+                    if (reverse) MoveLeft();
                     else MoveRight();
                     break;
                 }
@@ -103,7 +106,7 @@ public class Player {
 
     public void MoveUp() throws Exception {
         gotSpecial(x, y - 1);
-        if(y - 1 - mapPaddingY <= mapRowHeight && y - 1 - mapPaddingY >= 0) {
+        if (y - 1 - mapPaddingY <= mapRowHeight && y - 1 - mapPaddingY >= 0) {
             if (isPortal(x, y - 1)) {
                 moveToPortal(x, y - 1);
             } else if (isMovePossible(x, y - 1)) {
@@ -111,13 +114,12 @@ public class Player {
                 y--;
                 setCharacter();
             }
-        }
-        else moveToPortal(x, y - 1);
+        } else moveToPortal(x, y - 1);
     }
 
     public void MoveDown() throws Exception {
         gotSpecial(x, y + 1);
-        if(y + 1 - mapPaddingY <= mapRowHeight && y + 1 - mapPaddingY >= 0) {
+        if (y + 1 - mapPaddingY <= mapRowHeight && y + 1 - mapPaddingY >= 0) {
             if (isPortal(x, y + 1)) {
                 moveToPortal(x, y + 1);
             } else if (isMovePossible(x, y + 1)) {
@@ -125,41 +127,77 @@ public class Player {
                 y++;
                 setCharacter();
             }
-        }
-        else moveToPortal(x, y + 1);
+        } else moveToPortal(x, y + 1);
     }
 
     public void MoveLeft() throws Exception {
-            gotSpecial(x - 2, y);
-            if (isPortal(x - 2, y)) {
-                moveToPortal(x - 2, y);
-            } else if (isMovePossible(x - 2, y)) {
-                resetPlayer();
-                x = x - 2;
-                setCharacter();
-            }
+        gotSpecial(x - 2, y);
+        if (isPortal(x - 2, y)) {
+            moveToPortal(x - 2, y);
+        } else if (isMovePossible(x - 2, y)) {
+            resetPlayer();
+            x = x - 2;
+            setCharacter();
+        }
     }
 
     public void MoveRight() throws Exception {
         gotSpecial(x + 2, y);
-            if (isPortal(x + 2, y)) {
-                moveToPortal(x + 2, y);
-            } else if (isMovePossible(x + 2, y)) {
-                resetPlayer();
-                x = x + 2;
-                setCharacter();
-            }
+        if (isPortal(x + 2, y)) {
+            moveToPortal(x + 2, y);
+        } else if (isMovePossible(x + 2, y)) {
+            resetPlayer();
+            x = x + 2;
+            setCharacter();
+        }
     }
 
     private void resetPlayer() {
         try {
             TerminalPosition cellToModify = new TerminalPosition(x, y);
-            TextCharacter characterInBackBuffer  = screen.getBackCharacter(cellToModify);
-            characterInBackBuffer = characterInBackBuffer.withCharacter(' ');
-            screen.setCharacter(cellToModify, characterInBackBuffer);
+            char c = ' ';
+            TextColor tc = TextColor.ANSI.DEFAULT;
+            switch (map[x - mapPaddingX][y - mapPaddingY]) {
+                case '0':
+                    tc = TextColor.ANSI.WHITE;
+                    c = ' ';
+                    break;
+                case '1':
+                    tc = TextColor.ANSI.BLUE;
+                    c = '║';
+                    break;
+                case '2':
+                    tc = TextColor.ANSI.BLUE;
+                    c = '═';
+                    break;
+                case '4':
+                    tc = TextColor.ANSI.BLUE;
+                    c = '╗';
+                    break;
+                case '6':
+                    tc = TextColor.ANSI.BLUE;
+                    c = '╝';
+                    break;
+                case '5':
+                    tc = TextColor.ANSI.BLUE;
+                    c = '╚';
+                    break;
+                case '3':
+                    tc = TextColor.ANSI.BLUE;
+                    c = '╔';
+                    break;
+                default:
+                    TextCharacter characterInBackBuffer = screen.getBackCharacter(cellToModify);
+                    characterInBackBuffer = characterInBackBuffer.withCharacter(' ');
+                    screen.setCharacter(cellToModify, characterInBackBuffer);
+                    break;
+            }
 
-            if(coinMap != null && coinMap[x-mapPaddingX][y-mapPaddingY] == '*'){
-                coinMap[x-mapPaddingX][y-mapPaddingY] = ' ';
+            TextCharacter textC = new TextCharacter(c, tc, TextColor.ANSI.DEFAULT);
+            screen.setCharacter(cellToModify, textC);
+
+            if (coinMap != null && coinMap[x - mapPaddingX][y - mapPaddingY] == '*') {
+                coinMap[x - mapPaddingX][y - mapPaddingY] = ' ';
                 Game.map.addCoin();
             }
         } catch (Exception e) {
@@ -167,51 +205,67 @@ public class Player {
         }
     }
 
-    private void gotSpecial(int moveX, int moveY) throws Exception{
+    private void gotSpecial(int moveX, int moveY) throws Exception {
         TextCharacter tc = Game.getScreen().getFrontCharacter(moveX, moveY);
         char c = tc.getCharacter();
-            switch (c){
-                case 'S':
-                    Buffs b = new Buffs();
-                    b.setRunSpeed(true);
-                    b.start();
-                    break;
-                case 'R':
-                    if(reverse){
-                        reverse = false;
-                    }
-                    else {
-                        reverse = true;
-                        Buffs b2 = new Buffs();
-                        b2.setReverse(true);
-                        b2.start();
-                    }
-                    break;
-            }
+        switch (c) {
+            case 'S':
+                speedBuff = true;
+                Buffs b = new Buffs();
+                b.setRunSpeed(true);
+                b.start();
+                break;
+            case 'R':
+                reverse = !reverse;
+                if (reverse) {
+                    Buffs b2 = new Buffs();
+                    b2.setReverse(true);
+                    b2.start();
+                }
+                break;
+            case 'C':
+                cherryMode = true;
+                Buffs b3 = new Buffs();
+                b3.setCherryMode(true);
+                b3.start();
+                break;
+            case 'W':
+                wallWalker = true;
+                Buffs b4 = new Buffs();
+                b4.setWallWalkerMode(true);
+                b4.start();
+                break;
+            case '$':
+                Game.stats.setBonusPoints(Game.stats.getBonusPoints() + 400);
+                break;
+        }
     }
 
     private void setCharacter() throws Exception {
-        Map.printToScreen(x, y, '☻', TextColor.ANSI.YELLOW);
+        TextColor color = TextColor.ANSI.YELLOW;
+        if(cherryMode) color = TextColor.ANSI.RED;
+        else if(wallWalker) color = TextColor.ANSI.CYAN;
+        else if(reverse) color = TextColor.ANSI.MAGENTA;
+        else if(speedBuff) color = TextColor.ANSI.BLUE;
+        Map.printToScreen(x, y, '☻', color);
 
-        if(Game.map.isCoinMode() && !Game.map.anyCoinsLeft()) {  // NYTT
+        if (Game.map.isCoinMode() && !Game.map.anyCoinsLeft()) {  // NYTT
             Game.gameState = GameState.GAME_WON;
             Game.setGameRunning(false);
         }
     }
 
-    private boolean isPortal(int x, int y){
-        if(x - mapPaddingX < mapRowLength && x - mapPaddingX >= 0 && y - mapPaddingY < mapRowHeight && y - mapPaddingY >= 0) {
+    private boolean isPortal(int x, int y) {
+        if (x - mapPaddingX < mapRowLength && x - mapPaddingX >= 0 && y - mapPaddingY < mapRowHeight && y - mapPaddingY >= 0) {
             int index1 = (x - mapPaddingX);
             int index2 = (y - mapPaddingY);
             char c = map[index1][index2];
             if (c == ('Q')) return true;
             else return false;
-        }
-        else{
+        } else {
             try {
                 moveToOtherPortal();
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -221,7 +275,7 @@ public class Player {
     private void moveToPortal(int moveX, int moveY) throws Exception {
         for (int j = 0; j < mapRowHeight; j++) {
             for (int i = 0; i < mapRowLength; i++) {
-                if (map[i][j] ==('Q') && (i + mapPaddingX != moveX || j + mapPaddingY != moveY)) {
+                if (map[i][j] == ('Q') && (i + mapPaddingX != moveX || j + mapPaddingY != moveY)) {
                     resetPlayer();
                     x = i + mapPaddingX;
                     y = j + mapPaddingY;
@@ -232,10 +286,10 @@ public class Player {
         }
     }
 
-    private void moveToOtherPortal()throws Exception{
+    private void moveToOtherPortal() throws Exception {
         for (int j = 0; j < mapRowHeight; j++) {
             for (int i = 0; i < mapRowLength; i++) {
-                if (map[i][j] ==('Q') && (i + mapPaddingX != x || j + mapPaddingY != y)) {
+                if (map[i][j] == ('Q') && (i + mapPaddingX != x || j + mapPaddingY != y)) {
                     resetPlayer();
                     x = i + mapPaddingX;
                     y = j + mapPaddingY;
@@ -251,7 +305,12 @@ public class Player {
         int index2 = (y - mapPaddingY);
 
         char c = map[index1][index2];
-        if (c == (' ') || c == ('.') || c == ('A') || c == ('B') || c == ('C') || c == ('D') || c == ('Q') || c == ('P') || c == ('E') || c == (','))
+
+        if (wallWalker) {
+            if (c == (' ') || c == ('.') || c == ('A') || c == ('B') || c == ('C') || c == ('D') || c == ('Q') || c == ('P') || c == ('E') || c == (',') || c == ('0') || c == ('1') || c == ('2') || c == ('3') || c == ('4') || c == ('5') || c == ('6')) {
+                return true;
+            }
+        } else if (c == (' ') || c == ('.') || c == ('A') || c == ('B') || c == ('C') || c == ('D') || c == ('Q') || c == ('P') || c == ('E') || c == (','))
             return true;
         return false;
     }

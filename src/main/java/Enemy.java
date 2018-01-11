@@ -421,17 +421,49 @@ public class Enemy implements Runnable {
         return dr;
     }
 
-    public void caughtPlayer(){
+    public void caughtPlayer()throws Exception{
 
         Coordinates c = findPlayer();
         int playerX = c.getX();
         int playerY = c.getY();
 
-        if(x == playerX && y == playerY && Game.gameState != GameState.GAME_OVER) {
+        if(x == playerX && y == playerY && Game.gameState != GameState.GAME_OVER && Player.cherryMode){
+            Map.printToScreen(x, y, '☻', TextColor.ANSI.RED);
+            Game.stats.setBonusPoints(Game.stats.getBonusPoints() + 100);
+            TextColor tc = TextColor.ANSI.WHITE;
+            int gcd = 0;
+            switch (this.getClass().getName()) {
+                case "EasyEnemy":
+                    tc = TextColor.ANSI.WHITE;
+                    gcd = 400;
+                    break;
+                case "MediumEnemy":
+                    tc = TextColor.ANSI.GREEN;
+                    gcd = 200;
+                    break;
+                case "HardEnemy":
+                    gcd = 400;
+                    tc = TextColor.ANSI.RED;
+                    break;
+            }
 
-            Game.gameState = GameState.GAME_OVER;
-            Game.setGameRunning(false);
-            isRunning = false;
+            for (int j = 0; j < mapRowHeight; j++) {
+                for (int i = 0; i < mapRowLength; i++) {
+                    if (map[i][j] == ('E')) {
+                        x = i + mapPaddingX;
+                        y = j +mapPaddingY;
+                        Map.printToScreen(x, y, 'Ω', tc);
+
+                        break;
+                    }
+                }
+            }
+
+            Thread.sleep(10000);
+            exitNest(gcd);
+        }
+        else if(x == playerX && y == playerY && Game.gameState != GameState.GAME_OVER) {
+            gameOver();
         }
     }
 

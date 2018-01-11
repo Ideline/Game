@@ -187,7 +187,7 @@ public class Map {
         Screen screen = Game.getScreen();
 
         try {
-            String tempCoinMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map6/6coin.map"))); // NYTT
+            String tempCoinMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map6/test.map"))); // NYTT
             mapRowLength = tempCoinMap.indexOf("\r\n");
             tempCoinMap = tempCoinMap.replace("\r\n", "");
             mapRowHeight = tempCoinMap.length() / mapRowLength;
