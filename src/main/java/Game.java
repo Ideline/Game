@@ -25,6 +25,7 @@ public class Game {
     public static long startTime;
     public static Statistics stats; // NYTT
     public static Highscore highscore; // NYTT
+    public static Highscore timescore;
     public static WindowBasedTextGUI textGUI = null; // NYTT
     public static String playerName = "";
     public static Specials s;
@@ -53,6 +54,7 @@ public class Game {
         map = new Map();
         stats = new Statistics(); // NYTT
         highscore = new Highscore(); // NYTT
+        timescore = new Highscore();
 
         try {
             Terminal terminal = defaultTerminalFactory.createTerminal();
@@ -85,6 +87,9 @@ public class Game {
                     case HIGHSCORE:
                         Menu.highscoreMenu();
                         break;
+                    case TIMESCORE:
+                        Menu.timescoreMenu();
+                        break;
                 }
             }
         } catch (Exception e) {
@@ -108,17 +113,16 @@ public class Game {
         startTime = System.currentTimeMillis();
 
         highscore.createHighscoreLists(); // NYTT
-
-        // metod för att slumpa fram map
+        timescore.createHighscoreLists();
 
         Game.map.init();
 
         player = new Player();
         player.init();
 
-//        enemies = new Enemies();
-//        Game.enemies.init(level);
-//        Game.enemies.create();
+        enemies = new Enemies();
+        Game.enemies.init(level);
+        Game.enemies.create();
 
         s = new Specials("mainSpecial");
         s.createSpawnPoints();

@@ -4,6 +4,7 @@ public enum GameState {
     MENU_DIFFICULTY,
     GAME,
     HIGHSCORE,
+    TIMESCORE,
     GAME_OVER,
     GAME_WON,
     EXIT

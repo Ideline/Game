@@ -1,5 +1,6 @@
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,10 +18,16 @@ public class Highscore{
 
     private ArrayList<HighscoreEntry> mapHighscore;
     private ArrayList<HighscoreEntry> totalHighscore;
-    private int level = 0;
+    private ArrayList<TimescoreEntry> mapTimescore;
+
+    private int level = Game.getLevel();
+    private int nr = Game.map.getMapRotate();
 
     public ArrayList<HighscoreEntry> getMapHighscore() {
         return mapHighscore;
+    }
+    public ArrayList<TimescoreEntry> getMapTimescore() {
+        return mapTimescore;
     }
 
     public ArrayList<HighscoreEntry> getTotalHighscore() {
@@ -29,16 +36,18 @@ public class Highscore{
 
     public void createHighscoreLists(){
         try {
-            int nr = Game.map.getMapRotate();
-            int level = Game.getLevel();
             mapHighscore = new ArrayList<HighscoreEntry>();
             totalHighscore = new ArrayList<HighscoreEntry>();
+            mapTimescore = new ArrayList<TimescoreEntry>();
+
             String path = Paths.get(".").toAbsolutePath().normalize().toString();
             String tempMapHighscore = new String(Files.readAllBytes(Paths.get(path + "/maps/map" + nr + "/" + nr + "mapScore" + level + ".map")));
             String tempTotalHighscore = new String(Files.readAllBytes(Paths.get(path + "/maps/totalHighscore" + level + ".map")));
+            String tempMapTimescore = new String(Files.readAllBytes(Paths.get(path + "/maps/map" + nr + "/" + nr + "mapTimeScore" + level + ".map")));
 
             ArrayList<String> mapHighscoreTemp = new ArrayList<String>(Arrays.asList(tempMapHighscore.split("\r\n")));
             ArrayList<String> totalHighscoreTemp = new ArrayList<String>(Arrays.asList(tempTotalHighscore.split("\r\n")));
+            ArrayList<String> mapTimescoreTemp = new ArrayList<String>(Arrays.asList(tempMapTimescore.split("\r\n")));
 
             for(String a : mapHighscoreTemp) {
                 String[] mapParts = a.split(":");
@@ -48,6 +57,11 @@ public class Highscore{
             for(String a : totalHighscoreTemp) {
                 String[] mapParts = a.split(":");
                 totalHighscore.add(new HighscoreEntry(mapParts[0], Integer.parseInt((mapParts[1]).replace(" ", ""))));
+            }
+
+            for (String a : mapTimescoreTemp) {
+                String[] mapParts = a.split(":");
+                mapTimescore.add(new TimescoreEntry(mapParts[0], mapParts[1].replace(" ", "")));
             }
         }
         catch (Exception e) {
@@ -109,8 +123,6 @@ public class Highscore{
     // https://www.mkyong.com/java/how-to-write-to-file-in-java-bufferedwriter-example/
     public void printToMapHighscoreFile(){
 
-        int nr = Game.map.getMapRotate();
-        int level = Game.getLevel();
         String FILENAME = Paths.get(".").toAbsolutePath().normalize().toString() + "/maps/map" + nr + "/" + nr + "mapScore" + level + ".map";
         BufferedWriter bw = null;
         FileWriter fw = null;
@@ -148,7 +160,6 @@ public class Highscore{
 
     public void printToTotalHighscoreFile(){
 
-        int level = Game.getLevel();
         String FILENAME = Paths.get(".").toAbsolutePath().normalize().toString() + "/maps/totalHighscore" + level + ".map";
         BufferedWriter bw = null;
         FileWriter fw = null;
@@ -191,5 +202,105 @@ public class Highscore{
             highscore = highscore + highscoreList.get(i);
         }
         return highscore;
+    }
+
+    public void printToMapTimescoreFile() {
+
+        String FILENAME = Paths.get(".").toAbsolutePath().normalize().toString() + "/maps/map" + nr + "/" + nr + "mapTimeScore" + level + ".map";
+        BufferedWriter bw = null;
+        FileWriter fw = null;
+
+        try {
+
+            String content = "";
+            for (int i = 0; i < mapTimescore.size(); i++) {
+                content = content + mapTimescore.get(i);
+            }
+
+            fw = new FileWriter(FILENAME);
+            bw = new BufferedWriter(fw);
+            bw.write(content);
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            try {
+
+                if (bw != null)
+                    bw.close();
+
+                if (fw != null)
+                    fw.close();
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public boolean isNewMapTimeScore() {
+        String timescore = Statistics.formateTime(Game.stats.getMapTime());
+
+        int minutes = Integer.parseInt(timescore.substring(0, 2));
+        int seconds = Integer.parseInt(timescore.substring(3, 5));
+        int tenths = Integer.parseInt(timescore.substring(6, 8));
+
+        if (mapTimescore == null || (mapTimescore != null && mapTimescore.size() < 5)) {
+            mapTimescore.add(new TimescoreEntry(Game.playerName, timescore));
+            sortTimescoreLists();
+            Game.timescore.printToMapTimescoreFile();
+            return true;
+        } else {
+
+            for (int i = 0; i < mapTimescore.size(); i++) {
+
+                String listTimeScore = mapTimescore.get(i).getTimescore();
+                int listMinutes = Integer.parseInt(listTimeScore.substring(0, 2));
+                int listSeconds = Integer.parseInt(listTimeScore.substring(3, 5));
+                int listTenths = Integer.parseInt(listTimeScore.substring(6, 8));
+
+                if (minutes > listMinutes) {
+                    newTimeScoreEntry(timescore);
+                    return true;
+                } else if (minutes == listMinutes && seconds > listSeconds) {
+                    newTimeScoreEntry(timescore);
+                    return true;
+                } else if (seconds == listSeconds && tenths > listTenths) {
+                    newTimeScoreEntry(timescore);
+                    sortTimescoreLists();
+                    return true;
+                } else {
+
+                    return false;
+                }
+            }
+            sortTimescoreLists();
+            Game.timescore.printToMapTimescoreFile();
+            return false;
+        }
+
+    }
+
+    public void newTimeScoreEntry(String timescore) {
+        mapTimescore.remove(4);
+        mapTimescore.add(new TimescoreEntry(Game.playerName, timescore));
+        sortTimescoreLists();
+        Game.timescore.printToMapTimescoreFile();
+    }
+
+    public void sortTimescoreLists() {
+        Collections.sort(mapTimescore);
+    }
+
+    public String timescoretoString(ArrayList<TimescoreEntry> timescoreList) {
+
+        String timescore = "";
+        for (int i = 0; i < timescoreList.size(); i++) {
+            timescore = timescore + timescoreList.get(i);
+        }
+        return timescore;
     }
 }

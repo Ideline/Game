@@ -169,6 +169,7 @@ public class Menu {
         contentArea.setLayoutManager(new AbsoluteLayout());
 
         boolean newMapHighScore = Game.highscore.isNewMapHighScore(); // NYTT
+        boolean newMapTimeScore = Game.timescore.isNewMapTimeScore();
 
         Label l1 = new Label("You won!!!");
         Label l2 = new Label("Your time was: " + Statistics.formateTime(Game.stats.getMapTime())); // NYTT
@@ -186,7 +187,12 @@ public class Menu {
             stop.set(true);
         });
 
-        Button b3 = new Button("Back to main menu", () -> {
+        Button b3 = new Button("View timescore", () -> {
+            Game.gameState = GameState.TIMESCORE;
+            stop.set(true);
+        });
+
+        Button b4 = new Button("Back to main menu", () -> {
             Game.gameState = GameState.MENU;
             stop.set(true);
         });
@@ -225,6 +231,36 @@ public class Menu {
             contentArea.addComponent(label);
         }
 
+        if(!Game.map.isCoinMode()){
+            if(newMapTimeScore){ // NYTT
+                Label l5 = new Label("NEW MAP TIMESCORE!!!"); // NYTT
+
+                l5.setForegroundColor(TextColor.ANSI.YELLOW);
+                l5.setSize(new TerminalSize(76, 1));
+                l5.addStyle(SGR.BOLD);
+                l5.setPosition(new TerminalPosition(columnPosition, rowPosition+=2));
+
+
+                for(Label label : Arrays.asList(l5)){ // NYTT
+                    contentArea.addComponent(label);
+                }
+            }
+        }else{
+            if(newMapHighScore){ // NYTT
+                Label l5 = new Label("NEW MAP HIGHSCORE!!!"); // NYTT
+
+                l5.setForegroundColor(TextColor.ANSI.YELLOW);
+                l5.setSize(new TerminalSize(76, 1));
+                l5.addStyle(SGR.BOLD);
+                l5.setPosition(new TerminalPosition(columnPosition, rowPosition+=2));
+
+
+                for(Label label : Arrays.asList(l5)){ // NYTT
+                    contentArea.addComponent(label);
+                }
+            }
+        }
+
         if (newMapHighScore) { // NYTT
             Label l5 = new Label("NEW MAP HIGHSCORE!!!"); // NYTT
 
@@ -261,6 +297,8 @@ public class Menu {
                 Game.setLevel(2);
             }
         }
+
+
     }
 
     public static void gameOver() throws Exception {
@@ -270,6 +308,14 @@ public class Menu {
 
         boolean newMapHighScore = Game.highscore.isNewMapHighScore(); // NYTT
         boolean newTotalHighScore = Game.highscore.isNewTotalHighScore(); // NYTT
+        boolean newMapTimeScore = Game.timescore.isNewMapTimeScore();
+        boolean newHighOrTime;
+
+        if (!Game.map.isCoinMode()){
+            newHighOrTime=newMapTimeScore;
+        }else{
+            newHighOrTime=newMapHighScore;
+        }
 
         //AtomicBoolean är en boolean som är trådsäker
         final AtomicBoolean stop = new AtomicBoolean(false);
@@ -295,7 +341,12 @@ public class Menu {
             stop.set(true);
         });
 
-        Button b2 = new Button("Back to main menu", () -> {
+        Button b2 = new Button("View timescore", () -> {
+            Game.gameState = GameState.TIMESCORE;
+            stop.set(true);
+        });
+
+        Button b3 = new Button("Back to main menu", () -> {
             Game.gameState = GameState.MENU;
             stop.set(true);
         });
@@ -320,7 +371,7 @@ public class Menu {
         l4.addStyle(SGR.BOLD);
         l4.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
 
-        if (newMapHighScore) {
+        if (newHighOrTime) {
             Label l5 = new Label("NEW MAP HIGHSCORE!!!"); // NYTT
 
             l5.setForegroundColor(TextColor.ANSI.YELLOW);
@@ -348,14 +399,20 @@ public class Menu {
 
         b1.setSize(new TerminalSize(35, 1));
         b1.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
+        b3.setSize(new TerminalSize(35, 1));
+        b3.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
         b2.setSize(new TerminalSize(35, 1));
         b2.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
 
-        for (Button button : Arrays.asList(b1, b2)) {
+        for (Button button : Arrays.asList(b1, b3)) {
             contentArea.addComponent(button);
         }
         for (Label label : Arrays.asList(l1, l2, l3, l4)) { // NYTT
             contentArea.addComponent(label);
+        }
+
+        if(Game.map.isCoinMode() == false){
+            contentArea.addComponent(b2);
         }
 
         Game.stats.resetScore(); // NYTT
@@ -440,6 +497,71 @@ public class Menu {
         textGUI.getBackgroundPane().setComponent(contentArea);
         while (!stop.get()) {
             if (!textGUI.getGUIThread().processEventsAndUpdate()) {
+                Thread.sleep(1);
+            }
+        }
+    }
+
+    public static void timescoreMenu() throws Exception { // NYTT
+        Screen screen = Game.getScreen();
+        screen.clear();
+        screen.setCursorPosition(null);
+        String mapTimescore = "";
+
+
+        //AtomicBoolean är en boolean som är trådsäker
+        final AtomicBoolean stop = new AtomicBoolean(false);
+        MultiWindowTextGUI textGUI = new MultiWindowTextGUI(screen);
+
+        Panel contentArea = new Panel();
+        contentArea.setLayoutManager(new AbsoluteLayout());
+
+        //Vart vill vi skriva menyn på skärmen?
+        int columnPosition = screen.getTerminalSize().getColumns() / 2 - 35/2;
+        int rowPosition = screen.getTerminalSize().getRows() / 2 - 20;
+        mapTimescore = Game.timescore.timescoretoString(Game.timescore.getMapTimescore());
+
+
+        Label l1 = new Label("TiMESCORE ON THIS MAP!!!");
+        Label l2 = new Label(mapTimescore);
+        Label l3 = new Label("TOTAL TiMESCORE!!!");
+        Label l4 = new Label(mapTimescore);
+
+
+        //https://github.com/mabe02/lanterna/blob/master/docs/examples/gui/buttons.md
+        Button b1 = new Button("Back to main menu", () -> {
+            Game.gameState = GameState.MENU;
+            stop.set(true);
+        });
+
+        l1.setForegroundColor(TextColor.ANSI.YELLOW);
+        l1.setSize(new TerminalSize(76, 1));
+        l1.addStyle(SGR.BOLD);
+        l1.setPosition(new TerminalPosition(columnPosition, rowPosition));
+
+        l2.setForegroundColor(TextColor.ANSI.YELLOW);
+        l2.setSize(new TerminalSize(76, Game.highscore.getMapHighscore().size()));
+        l2.addStyle(SGR.BOLD);
+        l2.setPosition(new TerminalPosition(columnPosition, rowPosition+=2));
+
+        l3.setForegroundColor(TextColor.ANSI.YELLOW);
+        l3.setSize(new TerminalSize(76, 1));
+        l3.addStyle(SGR.BOLD);
+        l3.setPosition(new TerminalPosition(columnPosition, rowPosition+=2 * Game.timescore.getMapTimescore().size()));
+
+
+        for(Button button : Arrays.asList(b1)) {
+            contentArea.addComponent(button);
+        }
+
+        for(Label label : Arrays.asList(l1, l2, l3, l4)){
+            contentArea.addComponent(label);
+        }
+
+        //https://github.com/mabe02/lanterna/blob/master/src/test/java/com/googlecode/lanterna/gui2/FullScreenTextGUITest.java
+        textGUI.getBackgroundPane().setComponent(contentArea);
+        while(!stop.get()) {
+            if(!textGUI.getGUIThread().processEventsAndUpdate()) {
                 Thread.sleep(1);
             }
         }
