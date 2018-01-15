@@ -41,6 +41,10 @@ public class Game {
         Game.level = level;
     }
 
+    public static int getLevel() {
+        return level;
+    }
+
     public static void main(String[] args) throws Exception {
         DefaultTerminalFactory defaultTerminalFactory = new DefaultTerminalFactory();
         defaultTerminalFactory.setInitialTerminalSize(new TerminalSize(140, 52));
@@ -112,9 +116,9 @@ public class Game {
         player = new Player();
         player.init();
 
-        enemies = new Enemies();
-        Game.enemies.init(level);
-        Game.enemies.create();
+//        enemies = new Enemies();
+//        Game.enemies.init(level);
+//        Game.enemies.create();
 
         s = new Specials("mainSpecial");
         s.createSpawnPoints();

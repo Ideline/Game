@@ -6,6 +6,7 @@ import com.googlecode.lanterna.screen.Screen;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,6 +22,20 @@ public class Map {
     private boolean coinMode = true;
     private int nrCoinsStart = 0; // NYTT
     private int nrCoinsTaken = 0; // NYTT
+    private int mapRotate = 1;
+    private ArrayList<Coordinates> portalCoordinates = new ArrayList<Coordinates>();
+
+    public ArrayList<Coordinates> getPortalCoordinates() {
+        return portalCoordinates;
+    }
+
+    public void setMapRotate(int mapRotate) {
+        this.mapRotate = mapRotate;
+    }
+
+    public int getMapRotate() {
+        return mapRotate;
+    }
 
     public int getNrCoinsStart() { // NYTT
         for (int y = 0; y < mapRowHeight; y++) {
@@ -52,6 +67,13 @@ public class Map {
             throw new Exception("Kunde inte skapa banan.");
         if(coinMode && !drawCoinMap()) {
             throw new Exception("Kunde inte skapa banan.");
+        }
+        for (int j = 0; j < mapRowHeight; j++) {
+            for (int i = 0; i < mapRowLength; i++) {
+                if (map[i][j] == ('Q')){
+                    portalCoordinates.add(new Coordinates(i + mapPaddingX, j + mapPaddingY));
+                }
+            }
         }
     }
 
@@ -93,7 +115,7 @@ public class Map {
         Screen screen = Game.getScreen();
 
         try {
-            String tempMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map1/1.map"))); // NYTT
+            String tempMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map" + mapRotate + "/" + mapRotate +".map"))); // NYTT
                 mapRowLength = tempMap.indexOf("\r\n");
             tempMap = tempMap.replace("\r\n", "");
             mapRowHeight = tempMap.length() / mapRowLength;
@@ -187,7 +209,7 @@ public class Map {
         Screen screen = Game.getScreen();
 
         try {
-            String tempCoinMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map1/1coin.map"))); // NYTT
+            String tempCoinMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map" + mapRotate + "/" + mapRotate + "coin.map"))); // NYTT
             mapRowLength = tempCoinMap.indexOf("\r\n");
             tempCoinMap = tempCoinMap.replace("\r\n", "");
             mapRowHeight = tempCoinMap.length() / mapRowLength;

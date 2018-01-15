@@ -29,11 +29,13 @@ public class Highscore{
 
     public void createHighscoreLists(){
         try {
+            int nr = Game.map.getMapRotate();
+            int level = Game.getLevel();
             mapHighscore = new ArrayList<HighscoreEntry>();
             totalHighscore = new ArrayList<HighscoreEntry>();
             String path = Paths.get(".").toAbsolutePath().normalize().toString();
-            String tempMapHighscore = new String(Files.readAllBytes(Paths.get(path + "/maps/map2/2mapScoreEasy.map")));
-            String tempTotalHighscore = new String(Files.readAllBytes(Paths.get(path + "/maps/totalHighscoreEasy.map")));
+            String tempMapHighscore = new String(Files.readAllBytes(Paths.get(path + "/maps/map" + nr + "/" + nr + "mapScore" + level + ".map")));
+            String tempTotalHighscore = new String(Files.readAllBytes(Paths.get(path + "/maps/totalHighscore" + level + ".map")));
 
             ArrayList<String> mapHighscoreTemp = new ArrayList<String>(Arrays.asList(tempMapHighscore.split("\r\n")));
             ArrayList<String> totalHighscoreTemp = new ArrayList<String>(Arrays.asList(tempTotalHighscore.split("\r\n")));
@@ -107,7 +109,9 @@ public class Highscore{
     // https://www.mkyong.com/java/how-to-write-to-file-in-java-bufferedwriter-example/
     public void printToMapHighscoreFile(){
 
-        String FILENAME = Paths.get(".").toAbsolutePath().normalize().toString() + "/maps/map2/2mapScoreEasy.map";
+        int nr = Game.map.getMapRotate();
+        int level = Game.getLevel();
+        String FILENAME = Paths.get(".").toAbsolutePath().normalize().toString() + "/maps/map" + nr + "/" + nr + "mapScore" + level + ".map";
         BufferedWriter bw = null;
         FileWriter fw = null;
 
@@ -144,7 +148,8 @@ public class Highscore{
 
     public void printToTotalHighscoreFile(){
 
-        String FILENAME = Paths.get(".").toAbsolutePath().normalize().toString() + "/maps/totalHighscoreEasy.map";
+        int level = Game.getLevel();
+        String FILENAME = Paths.get(".").toAbsolutePath().normalize().toString() + "/maps/totalHighscore" + level + ".map";
         BufferedWriter bw = null;
         FileWriter fw = null;
 

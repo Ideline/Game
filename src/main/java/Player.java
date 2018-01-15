@@ -5,6 +5,8 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 
+import java.util.ArrayList;
+
 public class Player {
     public Player() {
         this.screen = Game.getScreen();
@@ -27,6 +29,8 @@ public class Player {
     public static boolean cherryMode = false;
     public static boolean wallWalker = false;
     public static boolean speedBuff = false;
+    private ArrayList<Coordinates> portalCoordinates = Game.map.getPortalCoordinates();
+
 
     public void setGlobalDelay(int globalDelay) {
         this.globalDelay = globalDelay;
@@ -49,8 +53,7 @@ public class Player {
                         y = j + mapPaddingY;
                         int bajs = 0;
                     }
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     int bajs = 0;
                     e.printStackTrace();
                 }
@@ -112,50 +115,118 @@ public class Player {
 
     public void MoveUp() throws Exception {
         gotSpecial(x, y - 1);
-        if (y - 1 - mapPaddingY <= mapRowHeight && y - 1 - mapPaddingY >= 0) {
-            if (isPortal(x, y - 1)) {
-                moveToPortal(x, y - 1);
-            } else if (isMovePossible(x, y - 1)) {
+
+        if (isPlayerOnPortal()){
+            int[] otherPortal = coordinatesOtherPortal(x, y);
+            if (otherPortal[1] > y )moveToOtherPortal(x, y);
+            else{
                 resetPlayer();
                 y--;
                 setCharacter();
             }
-        } else moveToPortal(x, y - 1);
+            //moveToOtherPortal(x, y);
+        }
+        else if (isPortal(x, y - 1)) moveToOtherPortal(x, y - 1);
+        else if (isMovePossible(x, y - 1)) {
+            resetPlayer();
+            y--;
+            setCharacter();
+        }
+
+//        if (y - 1 - mapPaddingY <= mapRowHeight && y - 1 - mapPaddingY >= 0) {
+//            if (isPortal(x, y - 1)) {
+//                moveToPortal(x, y - 1);
+//            } else if (isMovePossible(x, y - 1)) {
+//                resetPlayer();
+//                y--;
+//                setCharacter();
+//            }
+//        } else moveToPortal(x, y - 1);
     }
 
     public void MoveDown() throws Exception {
         gotSpecial(x, y + 1);
-        if (y + 1 - mapPaddingY <= mapRowHeight && y + 1 - mapPaddingY >= 0) {
-            if (isPortal(x, y + 1)) {
-                moveToPortal(x, y + 1);
-            } else if (isMovePossible(x, y + 1)) {
+        if (isPlayerOnPortal()){
+            int[] otherPortal = coordinatesOtherPortal(x, y);
+            if (otherPortal[1] < y )moveToOtherPortal(x, y);
+            else{
                 resetPlayer();
                 y++;
                 setCharacter();
             }
-        } else moveToPortal(x, y + 1);
+            //moveToOtherPortal(x, y);
+        }
+        else if (isPortal(x, y + 1)) moveToOtherPortal(x, y + 1);
+        else if (isMovePossible(x, y + 1)) {
+            resetPlayer();
+            y++;
+            setCharacter();
+        }
+
+//        if (y + 1 - mapPaddingY <= mapRowHeight && y + 1 - mapPaddingY >= 0) {
+//            if (isPortal(x, y + 1)) {
+//                moveToPortal(x, y + 1);
+//            } else if (isMovePossible(x, y + 1)) {
+//                resetPlayer();
+//                y++;
+//                setCharacter();
+//            }
+//        } else moveToPortal(x, y + 1);
     }
 
     public void MoveLeft() throws Exception {
         gotSpecial(x - 2, y);
-        if (isPortal(x - 2, y)) {
-            moveToPortal(x - 2, y);
-        } else if (isMovePossible(x - 2, y)) {
+
+        if (isPlayerOnPortal()) {
+            int[] otherPortal = coordinatesOtherPortal(x, y);
+            if (otherPortal[0] > x)moveToOtherPortal(x, y);
+            else{
+                resetPlayer();
+                x = x -2;
+                setCharacter();
+            }
+            //moveToOtherPortal(x, y);
+        } else if (isPortal(x - 2, y)) moveToOtherPortal(x - 2, y);
+        else if (isMovePossible(x - 2, y)) {
             resetPlayer();
             x = x - 2;
             setCharacter();
         }
+//        if (isPortal(x - 2, y)) {
+//            moveToPortal(x - 2, y);
+//        } else if (isMovePossible(x - 2, y)) {
+//            resetPlayer();
+//            x = x - 2;
+//            setCharacter();
+//        }
     }
 
     public void MoveRight() throws Exception {
         gotSpecial(x + 2, y);
-        if (isPortal(x + 2, y)) {
-            moveToPortal(x + 2, y);
-        } else if (isMovePossible(x + 2, y)) {
+
+        if (isPlayerOnPortal()){
+            int[] otherPortal = coordinatesOtherPortal(x, y);
+            if (otherPortal[0] < x)moveToOtherPortal(x, y);
+            else{
+                resetPlayer();
+                x = x + 2;
+                setCharacter();
+            }
+            //moveToOtherPortal(x, y);
+        }
+        else if (isPortal(x + 2, y)) moveToOtherPortal(x + 2, y);
+        else if (isMovePossible(x + 2, y)) {
             resetPlayer();
             x = x + 2;
             setCharacter();
         }
+//        if (isPortal(x + 2, y)) {
+//            moveToPortal(x + 2, y);
+//        } else if (isMovePossible(x + 2, y)) {
+//            resetPlayer();
+//            x = x + 2;
+//            setCharacter();
+//        }
     }
 
     private void resetPlayer() {
@@ -249,10 +320,10 @@ public class Player {
 
     private void setCharacter() throws Exception {
         TextColor color = TextColor.ANSI.YELLOW;
-        if(cherryMode) color = TextColor.ANSI.RED;
-        else if(wallWalker) color = TextColor.ANSI.CYAN;
-        else if(reverse) color = TextColor.ANSI.MAGENTA;
-        else if(speedBuff) color = TextColor.ANSI.BLUE;
+        if (cherryMode) color = TextColor.ANSI.RED;
+        else if (wallWalker) color = TextColor.ANSI.CYAN;
+        else if (reverse) color = TextColor.ANSI.MAGENTA;
+        else if (speedBuff) color = TextColor.ANSI.BLUE;
         Map.printToScreen(x, y, '☻', color);
 
         if (Game.map.isCoinMode() && !Game.map.anyCoinsLeft()) {  // NYTT
@@ -262,48 +333,61 @@ public class Player {
     }
 
     private boolean isPortal(int x, int y) {
-        if (x - mapPaddingX < mapRowLength && x - mapPaddingX >= 0 && y - mapPaddingY < mapRowHeight && y - mapPaddingY >= 0) {
-            int index1 = (x - mapPaddingX);
-            int index2 = (y - mapPaddingY);
-            char c = map[index1][index2];
-            if (c == ('Q')) return true;
-            else return false;
-        } else {
-            try {
-                moveToOtherPortal();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+        for (int i = 0; i < portalCoordinates.size(); i++) {
+            if (x == portalCoordinates.get(i).getX() && y == portalCoordinates.get(i).getY()) return true;
         }
         return false;
     }
 
-    private void moveToPortal(int moveX, int moveY) throws Exception {
-        for (int j = 0; j < mapRowHeight; j++) {
-            for (int i = 0; i < mapRowLength; i++) {
-                if (map[i][j] == ('Q') && (i + mapPaddingX != moveX || j + mapPaddingY != moveY)) {
-                    resetPlayer();
-                    x = i + mapPaddingX;
-                    y = j + mapPaddingY;
-                    setCharacter();
-                    return;
-                }
-            }
-        }
+//    private void moveToPortal(int moveX, int moveY) throws Exception {
+//
+//        for (int i = 0; i < portalCoordinates.size(); i++){
+//            if(moveX != portalCoordinates.get(i).getX()){
+//                resetPlayer();
+//                x
+//            }
+//        }
+//
+//        for (int j = 0; j < mapRowHeight; j++) {
+//            for (int i = 0; i < mapRowLength; i++) {
+//                if (map[i][j] == ('Q') && (i + mapPaddingX != moveX || j + mapPaddingY != moveY)) {
+//                    resetPlayer();
+//                    x = i + mapPaddingX;
+//                    y = j + mapPaddingY;
+//                    setCharacter();
+//                    return;
+//                }
+//            }
+//        }
+//    }
+
+    private void moveToOtherPortal(int a, int b) throws Exception {
+        int[] otherPortal = coordinatesOtherPortal(a, b);
+        resetPlayer();
+        x = otherPortal[0];
+        y = otherPortal[1];
+        setCharacter();
+        return;
     }
 
-    private void moveToOtherPortal() throws Exception {
-        for (int j = 0; j < mapRowHeight; j++) {
-            for (int i = 0; i < mapRowLength; i++) {
-                if (map[i][j] == ('Q') && (i + mapPaddingX != x || j + mapPaddingY != y)) {
-                    resetPlayer();
-                    x = i + mapPaddingX;
-                    y = j + mapPaddingY;
-                    setCharacter();
-                    return;
-                }
+    private int[] coordinatesOtherPortal(int a, int b) {
+        int[] otherPortal = new int[2];
+        for (int i = 0; i < portalCoordinates.size(); i++) {
+            if (a != portalCoordinates.get(i).getX() || b != portalCoordinates.get(i).getY()) {
+
+                otherPortal[0] = portalCoordinates.get(i).getX();
+                otherPortal[1] = portalCoordinates.get(i).getY();
             }
         }
+        return otherPortal;
+    }
+
+    private boolean isPlayerOnPortal() {
+        for (int i = 0; i < portalCoordinates.size(); i++) {
+            if (x == portalCoordinates.get(i).getX() && y == portalCoordinates.get(i).getY()) return true;
+        }
+        return false;
     }
 
     private boolean isMovePossible(int x, int y) {
