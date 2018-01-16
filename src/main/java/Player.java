@@ -100,7 +100,7 @@ public class Player {
                     break;
                 }
                 case Escape: {
-                    Game.stats.resetScore(); // NYTT
+                    Game.stats.resetAllScores(); // NYTT
                     Game.gameState = GameState.MENU;
                     Game.setGameRunning(false);
                     break;

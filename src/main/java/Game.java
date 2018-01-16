@@ -71,6 +71,9 @@ public class Game {
                     case MENU:
                         Menu.createMenu();
                         break;
+                    case CHOOSEMAP:
+                        Menu.chooseMap();
+                        break;
                     case MENU_DIFFICULTY:
                         Menu.levelDifficulty();
                         break;
@@ -111,7 +114,10 @@ public class Game {
         screen.setCursorPosition(null);
 
         startTime = System.currentTimeMillis();
-
+        Game.highscore.setLevel(level);
+        Game.highscore.setNr(Game.map.getMapRotate());
+        Game.timescore.setLevel(level);
+        Game.timescore.setNr(Game.map.getMapRotate());
         highscore.createHighscoreLists(); // NYTT
         timescore.createHighscoreLists();
 
@@ -123,6 +129,9 @@ public class Game {
         enemies = new Enemies();
         Game.enemies.init(level);
         Game.enemies.create();
+        if(Game.map.getMapRotate() == 5) {
+            Game.enemies.createLeftEnemies();
+        }
 
         s = new Specials("mainSpecial");
         s.createSpawnPoints();

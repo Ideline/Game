@@ -31,11 +31,19 @@ public class Statistics {
         return coinScore;
     }
 
-    public void resetScore(){
+    public void resetAllScores(){
         coinScore = 0;
         Game.map.setNrCoinsTaken(0);
         mapScore = 0;
         totalScore = 0;
+        bonusPoints = 0;
+    }
+
+    public void resetScores(){
+        coinScore = 0;
+        Game.map.setNrCoinsTaken(0);
+        mapScore = 0;
+        bonusPoints = 0;
     }
 
     public int getMapScore(){

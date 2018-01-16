@@ -27,7 +27,7 @@ public class Enemy implements Runnable {
     private Character[][]coinMap;
     private int mapPaddingX, mapPaddingY, mapRowLength, mapRowHeight;
     private boolean coordinateContainsCrum = false;
-    protected boolean isRunning;
+    protected volatile boolean isRunning;
     protected Thread t;
     protected String threadName;
 
@@ -51,14 +51,68 @@ public class Enemy implements Runnable {
         return threadName;
     }
 
-    public void initEnemy() throws Exception {
-        for (int j = 0; j < mapRowHeight; j++) {
-            for (int i = 0; i < mapRowLength; i++) {
-                if (map[i][j] ==('E')) {
-                    x = i + mapPaddingX;
-                    y = j + mapPaddingY;
-                    setCharacter();
-                    break;
+    synchronized public void initEnemy() throws Exception {
+        if(this.getClass().getName() == "LeftEnemy" && ((LeftEnemy)this).getDirectionNr() == 1) {
+            for (int j = 0; j < mapRowHeight; j++) {
+                for (int i = 0; i < mapRowLength; i++) {
+                    if (map[i][j] == ('A')) {
+                        map[i][j] = ' ';
+                        x = i + mapPaddingX;
+                        y = j + mapPaddingY;
+                        setCharacter();
+                        return;
+                    }
+                }
+            }
+        }
+        else if(this.getClass().getName() == "LeftEnemy" && ((LeftEnemy)this).getDirectionNr() == 2) {
+            for (int j = 0; j < mapRowHeight; j++) {
+                for (int i = 0; i < mapRowLength; i++) {
+                    if (map[i][j] == ('B')) {
+                        map[i][j] = ' ';
+                        x = i + mapPaddingX;
+                        y = j + mapPaddingY;
+                        setCharacter();
+                        return;
+                    }
+                }
+            }
+        }
+        else if(this.getClass().getName() == "LeftEnemy" && ((LeftEnemy)this).getDirectionNr() == 3) {
+            for (int j = 0; j < mapRowHeight; j++) {
+                for (int i = 0; i < mapRowLength; i++) {
+                    if (map[i][j] == ('C')) {
+                        map[i][j] = ' ';
+                        x = i + mapPaddingX;
+                        y = j + mapPaddingY;
+                        setCharacter();
+                        return;
+                    }
+                }
+            }
+        }
+        else if(this.getClass().getName() == "LeftEnemy" && ((LeftEnemy)this).getDirectionNr() == 4) {
+            for (int j = 0; j < mapRowHeight; j++) {
+                for (int i = 0; i < mapRowLength; i++) {
+                    if (map[i][j] == ('D')) {
+                        map[i][j] = ' ';
+                        x = i + mapPaddingX;
+                        y = j + mapPaddingY;
+                        setCharacter();
+                        return;
+                    }
+                }
+            }
+        }
+        else {
+            for (int j = 0; j < mapRowHeight; j++) {
+                for (int i = 0; i < mapRowLength; i++) {
+                    if (map[i][j] == ('E')) {
+                        x = i + mapPaddingX;
+                        y = j + mapPaddingY;
+                        setCharacter();
+                        break;
+                    }
                 }
             }
         }
@@ -75,6 +129,9 @@ public class Enemy implements Runnable {
                 break;
             case "HardEnemy":
                 tc = TextColor.ANSI.RED;
+                break;
+            case "LeftEnemy":
+                tc = TextColor.ANSI.MAGENTA;
                 break;
         }
         caughtPlayer();
@@ -211,6 +268,66 @@ public class Enemy implements Runnable {
         return false;
     }
 
+    synchronized protected boolean moveLeft(int gcd, int direction) {
+        try {
+            switch (direction) {
+                case 1: { // upp
+                    if (isMovePossible(x, y - 1)) {
+                        Thread.sleep(gcd);
+                        caughtPlayer();
+                        resetEnemy();
+                        y--;
+                        setCharacter();
+                        return true;
+                    }
+                    else
+                        return false;
+                }
+                case 2: { // ner
+                    if (isMovePossible(x, y + 1)) {
+                        Thread.sleep(gcd);
+                        caughtPlayer();
+                        resetEnemy();
+                        y++;
+                        setCharacter();
+                        return true;
+                    }
+                    else
+                        return false;
+                }
+                case 3: { // Vänster
+                    if (isMovePossible(x - 2, y)) {
+                        Thread.sleep(gcd);
+                        caughtPlayer();
+                        resetEnemy();
+                        x -= 2;
+                        setCharacter();
+                        return true;
+                    }
+                    else
+                        return false;
+                }
+                case 4: { // Höger
+                    if (isMovePossible(x + 2, y)) {
+                        Thread.sleep(gcd);
+                        caughtPlayer();
+                        resetEnemy();
+                        x += 2;
+                        setCharacter();
+                        return true;
+                    }
+                    else
+                        return false;
+                }
+                default:
+                    return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     private void resetEnemy() throws Exception {
         char c = ' ';
         if(coinMap != null && Game.map.isCoinMode()) { // NYTT
@@ -219,22 +336,22 @@ public class Enemy implements Runnable {
         Map.printToScreen(x, y, c, TextColor.ANSI.DEFAULT);
     }
 
-    private boolean isMovePossible(int x, int y) {
-        return isMovePossible(x, y, false);
+    private boolean isMovePossible(int a, int b) {
+        return isMovePossible(a, b, false);
     }
 
-    private boolean isMovePossible(int x, int y, boolean privileged) {
-        int index1 = (x - mapPaddingX);
-        int index2 = (y - mapPaddingY);
+    private boolean isMovePossible(int a, int b, boolean privileged) {
+        int index1 = (a - mapPaddingX);
+        int index2 = (b - mapPaddingY);
         char c = map[index1][index2];
         if (c == ('P') || c == ('E') || c == (' ') || c == ('.') || c == (',') || c == ('^') || c == ('A') || c == ('B')|| c == ('C')|| c == ('D') || (c == ('-') && privileged) || c == ('Q'))
             return true;
         return false;
     }
 
-    private boolean isPortal(int x, int y){
-        int index1 = (x - mapPaddingX);
-        int index2 = (y - mapPaddingY);
+    private boolean isPortal(int a, int b){
+        int index1 = (a - mapPaddingX);
+        int index2 = (b - mapPaddingY);
         char c = map[index1][index2];
         if (c == ('Q')) return true;
         return false;
@@ -445,13 +562,17 @@ public class Enemy implements Runnable {
                     gcd = 400;
                     tc = TextColor.ANSI.RED;
                     break;
+                case "LeftEnemy":
+                    gcd = 400;
+                    tc = TextColor.ANSI.MAGENTA;
+                    break;
             }
 
             for (int j = 0; j < mapRowHeight; j++) {
                 for (int i = 0; i < mapRowLength; i++) {
                     if (map[i][j] == ('E')) {
                         x = i + mapPaddingX;
-                        y = j +mapPaddingY;
+                        y = j + mapPaddingY;
                         Map.printToScreen(x, y, 'Ω', tc);
 
                         break;
