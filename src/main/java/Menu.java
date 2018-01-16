@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Menu {
 
-    private static boolean gameOver = false;
+    public static boolean gameOver = false;
 
     public static void createMenu() throws Exception {
         Screen screen = Game.getScreen();
@@ -574,6 +574,7 @@ public class Menu {
                 Thread.sleep(1);
             }
         }
+
     }
 
     public static void timescoreMenu() throws Exception { // NYTT

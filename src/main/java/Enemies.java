@@ -24,9 +24,9 @@ public class Enemies {
                     }
                 }
                 enemies.add(new EasyEnemy());
-//                enemies.add(new MediumEnemy());
-//                enemies.add(new HardEnemy());
-//                enemies.add(new EasyEnemy());
+                enemies.add(new MediumEnemy());
+                enemies.add(new HardEnemy());
+                enemies.add(new EasyEnemy());
                 break;
             case 2:
                 if (Game.map.getMapRotate() == 5) {

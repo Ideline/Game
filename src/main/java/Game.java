@@ -78,6 +78,7 @@ public class Game {
                         Menu.levelDifficulty();
                         break;
                     case GAME:
+                        Menu.gameOver = false;
                         gameRunning = true;
                         runGame();
                         break;

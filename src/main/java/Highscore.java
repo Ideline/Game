@@ -259,13 +259,15 @@ public class Highscore{
 
     public boolean isNewMapTimeScore() {
         String timescore = Statistics.formateTime(Game.stats.getMapTime());
-
-        int time = Integer.parseInt(timescore.replaceAll(".", ""));
+        int time = Integer.parseInt(timescore.replace(".", ""));
 
         for(int i = 0; i < mapTimescore.size(); i++){
 
-            int listTime = Integer.parseInt(mapTimescore.get(i).getTimescore().replaceAll(".", ""));
+            int listTime = Integer.parseInt(mapTimescore.get(i).getTimescore().replace(".", ""));
             if(time > listTime){
+                mapTimescore.add(new TimescoreEntry(Game.playerName, timescore));
+                sortTimescoreLists();
+                Game.timescore.printToMapTimescoreFile();
                 return true;
             }
         }
