@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Map {
 
-    public Map(){
+    public Map() {
     }
 
     private Character[][] map, coinMap = null;
@@ -24,6 +24,7 @@ public class Map {
     private int nrCoinsTaken = 0; // NYTT
     private int mapRotate = 1;
     private ArrayList<Coordinates> portalCoordinates = new ArrayList<Coordinates>();
+    public static long buffStartTime;
 
     public ArrayList<Coordinates> getPortalCoordinates() {
         return portalCoordinates;
@@ -40,7 +41,7 @@ public class Map {
     public int getNrCoinsStart() { // NYTT
         for (int y = 0; y < mapRowHeight; y++) {
             for (int x = 0; x < mapRowLength; x++) {
-                if(coinMap[x][y] == '*') nrCoinsStart++;
+                if (coinMap[x][y] == '*') nrCoinsStart++;
             }
         }
         return nrCoinsStart;
@@ -54,23 +55,23 @@ public class Map {
         this.nrCoinsTaken = nrCoinsTaken;
     }
 
-    public boolean isCoinmode(){ // NYTT
+    public boolean isCoinmode() { // NYTT
         return coinMode;
     }
 
-    public void addCoin(){ // NYTT
+    public void addCoin() { // NYTT
         nrCoinsTaken++;
     }
 
     public void init() throws Exception {
         if (!drawMap())
             throw new Exception("Kunde inte skapa banan.");
-        if(coinMode && !drawCoinMap()) {
+        if (coinMode && !drawCoinMap()) {
             throw new Exception("Kunde inte skapa banan.");
         }
         for (int j = 0; j < mapRowHeight; j++) {
             for (int i = 0; i < mapRowLength; i++) {
-                if (map[i][j] == ('Q')){
+                if (map[i][j] == ('Q')) {
                     portalCoordinates.add(new Coordinates(i + mapPaddingX, j + mapPaddingY));
                 }
             }
@@ -115,14 +116,14 @@ public class Map {
         Screen screen = Game.getScreen();
 
         try {
-            String tempMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map" + mapRotate + "/" + mapRotate +".map"))); // NYTT
-                mapRowLength = tempMap.indexOf("\r\n");
+            String tempMap = new String(Files.readAllBytes(Paths.get(path + "/maps/map" + mapRotate + "/" + mapRotate + ".map"))); // NYTT
+            mapRowLength = tempMap.indexOf("\r\n");
             tempMap = tempMap.replace("\r\n", "");
             mapRowHeight = tempMap.length() / mapRowLength;
             map = new Character[mapRowLength][mapRowHeight];
             for (int y = 0; y < mapRowHeight; y++) {
                 for (int x = 0; x < mapRowLength; x++) {
-                    int index = x + (y*mapRowLength);
+                    int index = x + (y * mapRowLength);
                     map[x][y] = tempMap.charAt(index);
                 }
             }
@@ -216,7 +217,7 @@ public class Map {
             coinMap = new Character[mapRowLength][mapRowHeight];
             for (int y = 0; y < mapRowHeight; y++) {
                 for (int x = 0; x < mapRowLength; x++) {
-                    int index = x + (y*mapRowLength);
+                    int index = x + (y * mapRowLength);
                     coinMap[x][y] = tempCoinMap.charAt(index);
                 }
             }
@@ -244,7 +245,7 @@ public class Map {
                             break;
                     }
 
-                    if(c != ' ') {
+                    if (c != ' ') {
                         TerminalPosition cellToModify = new TerminalPosition(x + mapPaddingX, y + mapPaddingY);
                         TextCharacter characterInBackBuffer = screen.getBackCharacter(cellToModify);
                         characterInBackBuffer = characterInBackBuffer.withForegroundColor(tc);
@@ -269,7 +270,7 @@ public class Map {
 
     public static void drawMapStats() throws Exception { // NYTT
         Screen screen = Game.getScreen();
-            Game.stats.setMapScore(); // NYTT
+        Game.stats.setMapScore(); // NYTT
         //https://github.com/mabe02/lanterna/blob/master/docs/tutorial/Tutorial03.md
         String timeLabel = Statistics.formateTime(Game.stats.getMapTime()); // NYTT
         String pointsLabel = "" + Game.stats.getMapScore(); // NYTT
@@ -281,31 +282,36 @@ public class Map {
         textGraphics.setStyleFrom(new StyleSet.Set().enableModifiers(SGR.BOLD).setForegroundColor(TextColor.ANSI.RED));
         textGraphics.fillRectangle(labelBoxTopLeft, labelBoxSize, ' ');
 
-        if(Game.map.isCoinMode()){ // NYTT
-            textGraphics.putString(labelBoxTopLeft.withRelative(1, 1), "time: " + timeLabel + " score: " + pointsLabel); // NYTT
-        }
-        else textGraphics.putString(labelBoxTopLeft.withRelative(1, 1), "time: " + timeLabel);
+        //String buffName = Game.player.buffName;
 
+        //if (buffName == null) {
+            if (Game.map.isCoinMode()) { // NYTT
+                textGraphics.putString(labelBoxTopLeft.withRelative(1, 1), "time: " + timeLabel + " score: " + pointsLabel); // NYTT
+            } else textGraphics.putString(labelBoxTopLeft.withRelative(1, 1), "time: " + timeLabel);
+        //}
+        //else {
+          //  String timeRemaining = Statistics.formateTime(Game.player.buffTimeLeft(buffStartTime));
+          //  textGraphics.putString(labelBoxTopLeft.withRelative(1, 1), "time: " + timeLabel + " score: " + pointsLabel + " " + buffName + ": " + timeRemaining + "s");
+        //}
 
         synchronized (screen) {
             screen.refresh();
         }
     }
 
-    public boolean anyCoinsLeft(){
+    public boolean anyCoinsLeft() {
 
         int nrCoins = 0;
-        for(int j = 0; j < mapRowHeight; j++) {
+        for (int j = 0; j < mapRowHeight; j++) {
             for (int i = 0; i < mapRowLength; i++) {
                 if (coinMap[i][j] == '*') {
                     nrCoins++;
                 }
             }
         }
-        if(nrCoins > 0){
+        if (nrCoins > 0) {
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
@@ -313,17 +319,19 @@ public class Map {
     public static void printToScreen(int x, int y, char c) throws Exception {
         printToScreen(x, y, c, null, true);
     }
+
     public static void printToScreen(int x, int y, char c, TextColor tc) throws Exception {
         printToScreen(x, y, c, tc, true);
     }
+
     public static void printToScreen(int x, int y, char c, TextColor tc, boolean refresh) throws Exception {
         Screen screen = Game.getScreen();
         TerminalPosition cellToModify = new TerminalPosition(x, y);
         TextCharacter characterInBackBuffer = screen.getBackCharacter(cellToModify);
-        if(tc != null)
+        if (tc != null)
             characterInBackBuffer = characterInBackBuffer.withForegroundColor(tc);
         characterInBackBuffer = characterInBackBuffer.withCharacter(c);
-        if(refresh) {
+        if (refresh) {
             synchronized (screen) {
                 screen.setCharacter(cellToModify, characterInBackBuffer);
                 screen.refresh();

@@ -265,51 +265,11 @@ public class Highscore{
 
             int listTime = Integer.parseInt(mapTimescore.get(i).getTimescore().replace(".", ""));
             if(time > listTime){
-                mapTimescore.add(new TimescoreEntry(Game.playerName, timescore));
-                sortTimescoreLists();
-                Game.timescore.printToMapTimescoreFile();
+                newTimeScoreEntry(timescore);
                 return true;
             }
         }
         return false;
-//        int minutes = Integer.parseInt(timescore.substring(0, 2));
-//        int seconds = Integer.parseInt(timescore.substring(3, 5));
-//        int tenths = Integer.parseInt(timescore.substring(6, 8));
-
-//        if (mapTimescore == null || (mapTimescore != null && mapTimescore.size() < 5)) {
-//            mapTimescore.add(new TimescoreEntry(Game.playerName, timescore));
-//            sortTimescoreLists();
-//            Game.timescore.printToMapTimescoreFile();
-//            return true;
-//        } else {
-//
-//            for (int i = 0; i < mapTimescore.size(); i++) {
-//
-//                String listTimeScore = mapTimescore.get(i).getTimescore();
-//                int listMinutes = Integer.parseInt(listTimeScore.substring(0, 2));
-//                int listSeconds = Integer.parseInt(listTimeScore.substring(3, 5));
-//                int listTenths = Integer.parseInt(listTimeScore.substring(6, 8));
-//
-//                if (minutes > listMinutes) {
-//                    newTimeScoreEntry(timescore);
-//                    return true;
-//                } else if (minutes == listMinutes && seconds > listSeconds) {
-//                    newTimeScoreEntry(timescore);
-//                    return true;
-//                } else if (seconds == listSeconds && tenths > listTenths) {
-//                    newTimeScoreEntry(timescore);
-//                    sortTimescoreLists();
-//                    return true;
-//                } else {
-//
-//                    return false;
-//                }
-//            }
-//            sortTimescoreLists();
-//            Game.timescore.printToMapTimescoreFile();
-//            return false;
-//        }
-
     }
 
     public void newTimeScoreEntry(String timescore) {

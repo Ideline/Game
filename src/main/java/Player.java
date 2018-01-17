@@ -30,6 +30,11 @@ public class Player {
     public static boolean wallWalker = false;
     public static boolean speedBuff = false;
     private ArrayList<Coordinates> portalCoordinates = Game.map.getPortalCoordinates();
+    public static String buffName;
+    public static long buffTime;
+    public long timeLeft = 0;
+    public static ArrayList<Buffs> activeBuffs = new ArrayList<Buffs>();
+    private Buffs b, b2, b3, b4;
 
 
     public void setGlobalDelay(int globalDelay) {
@@ -54,7 +59,6 @@ public class Player {
                         int bajs = 0;
                     }
                 } catch (Exception e) {
-                    int bajs = 0;
                     e.printStackTrace();
                 }
             }
@@ -116,17 +120,16 @@ public class Player {
     public void MoveUp() throws Exception {
         gotSpecial(x, y - 1);
 
-        if (isPlayerOnPortal()){
+        if (isPlayerOnPortal()) {
             int[] otherPortal = coordinatesOtherPortal(x, y);
-            if (otherPortal[1] > y )moveToOtherPortal(x, y);
-            else{
+            if (otherPortal[1] > y) moveToOtherPortal(x, y);
+            else {
                 resetPlayer();
                 y--;
                 setCharacter();
             }
             //moveToOtherPortal(x, y);
-        }
-        else if (isPortal(x, y - 1)) moveToOtherPortal(x, y - 1);
+        } else if (isPortal(x, y - 1)) moveToOtherPortal(x, y - 1);
         else if (isMovePossible(x, y - 1)) {
             resetPlayer();
             y--;
@@ -146,17 +149,16 @@ public class Player {
 
     public void MoveDown() throws Exception {
         gotSpecial(x, y + 1);
-        if (isPlayerOnPortal()){
+        if (isPlayerOnPortal()) {
             int[] otherPortal = coordinatesOtherPortal(x, y);
-            if (otherPortal[1] < y )moveToOtherPortal(x, y);
-            else{
+            if (otherPortal[1] < y) moveToOtherPortal(x, y);
+            else {
                 resetPlayer();
                 y++;
                 setCharacter();
             }
             //moveToOtherPortal(x, y);
-        }
-        else if (isPortal(x, y + 1)) moveToOtherPortal(x, y + 1);
+        } else if (isPortal(x, y + 1)) moveToOtherPortal(x, y + 1);
         else if (isMovePossible(x, y + 1)) {
             resetPlayer();
             y++;
@@ -179,10 +181,10 @@ public class Player {
 
         if (isPlayerOnPortal()) {
             int[] otherPortal = coordinatesOtherPortal(x, y);
-            if (otherPortal[0] > x)moveToOtherPortal(x, y);
-            else{
+            if (otherPortal[0] > x) moveToOtherPortal(x, y);
+            else {
                 resetPlayer();
-                x = x -2;
+                x = x - 2;
                 setCharacter();
             }
             //moveToOtherPortal(x, y);
@@ -204,17 +206,16 @@ public class Player {
     public void MoveRight() throws Exception {
         gotSpecial(x + 2, y);
 
-        if (isPlayerOnPortal()){
+        if (isPlayerOnPortal()) {
             int[] otherPortal = coordinatesOtherPortal(x, y);
-            if (otherPortal[0] < x)moveToOtherPortal(x, y);
-            else{
+            if (otherPortal[0] < x) moveToOtherPortal(x, y);
+            else {
                 resetPlayer();
                 x = x + 2;
                 setCharacter();
             }
             //moveToOtherPortal(x, y);
-        }
-        else if (isPortal(x + 2, y)) moveToOtherPortal(x + 2, y);
+        } else if (isPortal(x + 2, y)) moveToOtherPortal(x + 2, y);
         else if (isMovePossible(x + 2, y)) {
             resetPlayer();
             x = x + 2;
@@ -273,9 +274,11 @@ public class Player {
             TextCharacter textC = new TextCharacter(c, tc, TextColor.ANSI.DEFAULT);
             screen.setCharacter(cellToModify, textC);
 
-            if (coinMap != null && coinMap[x - mapPaddingX][y - mapPaddingY] == '*') {
-                coinMap[x - mapPaddingX][y - mapPaddingY] = ' ';
-                Game.map.addCoin();
+            if(Game.map.isCoinMode()) {
+                if (coinMap != null && coinMap[x - mapPaddingX][y - mapPaddingY] == '*') {
+                    coinMap[x - mapPaddingX][y - mapPaddingY] = ' ';
+                    Game.map.addCoin();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -287,35 +290,70 @@ public class Player {
         char c = tc.getCharacter();
         switch (c) {
             case 'S':
+                if(buffName == "SPEED BUFF: "){
+                    timeLeft += 5000;
+
+                }
                 speedBuff = true;
-                Buffs b = new Buffs();
+                b = new Buffs();
+                activeBuffs.add(b);
                 b.setRunSpeed(true);
+                buffTime = 5000;
+                buffName = "SPEED BUFF: ";
+                Map.buffStartTime = System.currentTimeMillis();
                 b.start();
                 break;
             case 'R':
+                if(buffName == "REVERSED CONTROLLS: "){
+                    timeLeft = 0;
+                    buffName = "";
+                }
                 reverse = !reverse;
                 if (reverse) {
-                    Buffs b2 = new Buffs();
+                    b2 = new Buffs();
+                    activeBuffs.add(b2);
                     b2.setReverse(true);
+                    buffTime = 20000;
+                    buffName = "REVERSED CONTROLLS: ";
+                    Map.buffStartTime = System.currentTimeMillis();
                     b2.start();
                 }
                 break;
             case 'C':
+                if(buffName == "CHERRY BUFF: "){
+                    timeLeft += 10000;
+                }
                 cherryMode = true;
-                Buffs b3 = new Buffs();
+                b3 = new Buffs();
+                activeBuffs.add(b3);
                 b3.setCherryMode(true);
+                buffTime = 10000;
+                buffName = "CHERRY BUFF: ";
+                Map.buffStartTime = System.currentTimeMillis();
                 b3.start();
                 break;
             case 'W':
+                if(buffName == "WALLWALKER: "){
+                    timeLeft += 10000;
+                }
                 wallWalker = true;
-                Buffs b4 = new Buffs();
+                b4 = new Buffs();
+                activeBuffs.add(b4);
                 b4.setWallWalkerMode(true);
+                buffTime = 10000;
+                buffName = "WALLWALKER: ";
+                Map.buffStartTime = System.currentTimeMillis();
                 b4.start();
                 break;
             case '$':
                 Game.stats.setBonusPoints(Game.stats.getBonusPoints() + 400);
                 break;
         }
+    }
+
+    public long buffTimeLeft(long buffStartTime){
+        timeLeft = buffTime - (System.currentTimeMillis() - buffStartTime);
+        return timeLeft;
     }
 
     private void setCharacter() throws Exception {

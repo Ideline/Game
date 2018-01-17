@@ -10,6 +10,18 @@ public class Buffs implements Runnable{
     private String threadName = "buffThread";
     private volatile boolean running = true;
 
+    public Buffs(){}
+
+    public Buffs(long timeLeft, String buffName, TextColor tc){
+        this.timLeft = timeLeft;
+        this.buffName = buffName;
+        this.tc = tc;
+    }
+
+    private long timLeft;
+    private String buffName;
+    private TextColor tc;
+
     public void start() throws Exception {
 
         if(t == null) {
@@ -55,11 +67,13 @@ public class Buffs implements Runnable{
             int gcd = 5000;
             Game.player.setGlobalDelay(0);
             Thread.sleep(gcd);
+            //buffStartTime = System.currentTimeMillis();
             Map.printToScreen(Game.player.getX(), Game.player.getY(), '☻', TextColor.ANSI.YELLOW);
             Game.player.setGlobalDelay(200);
             Player.speedBuff = false;
             runSpeed = false;
             running = false;
+            Player.buffName = "";
         }
     }
 
@@ -70,6 +84,7 @@ public class Buffs implements Runnable{
             Player.reverse = false;
             reverse = false;
             running = false;
+            Player.buffName = "";
         }
     }
 
@@ -80,6 +95,7 @@ public class Buffs implements Runnable{
             Player.cherryMode = false;
             cherryMode = false;
             running = false;
+            Player.buffName = "";
         }
     }
 
@@ -90,6 +106,7 @@ public class Buffs implements Runnable{
             Player.wallWalker = false;
             wallWalkerMode = false;
             running = false;
+            Player.buffName = "";
         }
     }
 }

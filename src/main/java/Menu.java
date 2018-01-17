@@ -44,13 +44,19 @@ public class Menu {
         });
 
         Label l2 = new Label("Game Menu");
-        Label l1 = new Label(" ___________  ___________  ___________   ____  ____                ________ ________   ___________   ____________\n" +
-                "|\\    ______\\|\\    ______\\|\\    ___   \\ |\\   \\|\\   \\              |\\    ___ \\ ___   \\ |\\    ___   \\ |\\    ____   \\\n" +
-                "\\ \\   \\___ _|\\ \\   \\___ _|\\ \\   \\_|\\   \\\\ \\   \\/   /|_  __________\\ \\   \\\\ \\___\\ \\   \\\\ \\   \\_|\\   \\\\ \\   \\__|\\   \\\n" +
-                " \\ \\    ____\\ \\ \\    ____\\ \\ \\    ___   \\\\ \\    ___   \\|\\__________\\ \\   \\\\|___|\\ \\   \\\\ \\    ___   \\\\ \\   \\ \\ \\   \\\n" +
-                "  \\ \\   \\___|  \\ \\   \\___|  \\ \\   \\\\ \\   \\\\ \\   \\\\ \\   \\|__________|\\ \\   \\      \\ \\   \\\\ \\   \\\\ \\   \\\\ \\   \\ \\ \\   \\\n" +
-                "   \\ \\___\\      \\ \\___\\      \\ \\___\\\\ \\___\\\\ \\___\\\\ \\___\\            \\ \\___\\      \\ \\___\\\\ \\___\\\\ \\___\\\\ \\___\\ \\ \\___\\\n" +
-                "    \\|____|      \\|_ __|      \\|____|\\|____|\\|___| \\|___|             \\|____|      \\|____|\\|____|\\|____|\\|____| \\|____|");
+        Label l1 = new Label("███████╗███████╗ █████╗ ██╗  ██╗     ███╗   ███╗ █████╗ ███╗   ██╗\n" +
+                "██╔════╝██╔════╝██╔══██╗██║ ██╔╝     ████╗ ████║██╔══██╗████╗  ██║\n" +
+                "█████╗  █████╗  ███████║█████╔╝█████╗██╔████╔██║███████║██╔██╗ ██║\n" +
+                "██╔══╝  ██╔══╝  ██╔══██║██╔═██╗╚════╝██║╚██╔╝██║██╔══██║██║╚██╗██║\n" +
+                "██║     ██║     ██║  ██║██║  ██╗     ██║ ╚═╝ ██║██║  ██║██║ ╚████║\n" +
+                "╚═╝     ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝     ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝");
+//        Label l1 = new Label(" ___________  ___________  ___________   ____  ____                ________ ________   ___________   ____________\n" +
+//                "|\\    ______\\|\\    ______\\|\\    ___   \\ |\\   \\|\\   \\              |\\    ___ \\ ___   \\ |\\    ___   \\ |\\    ____   \\\n" +
+//                "\\ \\   \\___ _|\\ \\   \\___ _|\\ \\   \\_|\\   \\\\ \\   \\/   /|_  __________\\ \\   \\\\ \\___\\ \\   \\\\ \\   \\_|\\   \\\\ \\   \\__|\\   \\\n" +
+//                " \\ \\    ____\\ \\ \\    ____\\ \\ \\    ___   \\\\ \\    ___   \\|\\__________\\ \\   \\\\|___|\\ \\   \\\\ \\    ___   \\\\ \\   \\ \\ \\   \\\n" +
+//                "  \\ \\   \\___|  \\ \\   \\___|  \\ \\   \\\\ \\   \\\\ \\   \\\\ \\   \\|__________|\\ \\   \\      \\ \\   \\\\ \\   \\\\ \\   \\\\ \\   \\ \\ \\   \\\n" +
+//                "   \\ \\___\\      \\ \\___\\      \\ \\___\\\\ \\___\\\\ \\___\\\\ \\___\\            \\ \\___\\      \\ \\___\\\\ \\___\\\\ \\___\\\\ \\___\\ \\ \\___\\\n" +
+//                "    \\|____|      \\|_ __|      \\|____|\\|____|\\|___| \\|___|             \\|____|      \\|____|\\|____|\\|____|\\|____| \\|____|");
 //        Label l1 = new Label("████ ████  ▄███▄  ██ ▄██     ██▄ ▄██  ▄███▄  ██▄ ██\n" +
 //                "██▄  ██▄  ██▀ ▀██ ████▀      ██▀█▀██ ██▀ ▀██ ███▄██\n" +
 //                "██▀  ██▀  ███████ ████▄  ▀▀▀ ██   ██ ███████ ██▀███\n" +
@@ -60,15 +66,24 @@ public class Menu {
         int columnPosition = screen.getTerminalSize().getColumns() / 2 - 35 / 2;
         int rowPosition = screen.getTerminalSize().getRows() / 2 - 10;
 
-        l2.setForegroundColor(TextColor.ANSI.YELLOW);
+        l2.setForegroundColor(TextColor.ANSI.WHITE);
         l2.setSize(new TerminalSize(76, 1));
         l2.addStyle(SGR.BOLD);
         l2.setPosition(new TerminalPosition(columnPosition + 13, rowPosition += 2));
+//        for(int i = 0; i < l1.getText().length(); i++){
+//            if(l1.getText().charAt(i) == '█' || l1.getText().charAt(i) == '▄' || l1.getText().charAt(i) == '▀'){
+//                l1.getText().charAt(i).
+//            }
+//            else{
+//                l1.addStyle(SGR.BLINK);
+//            }
+//        }
+        l1.addStyle(SGR.BLINK);
 
-        l1.setForegroundColor(TextColor.ANSI.YELLOW);
+//        l1.setForegroundColor(TextColor.ANSI.WHITE);
         l1.setSize(new TerminalSize(130, 10));
         l1.addStyle(SGR.BOLD);
-        l1.setPosition(new TerminalPosition(7, 7));
+        l1.setPosition(new TerminalPosition(37, 7));
 
         b1.setSize(new TerminalSize(35, 1));
         b1.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
@@ -141,7 +156,7 @@ public class Menu {
         int columnPosition = screen.getTerminalSize().getColumns() / 2 - 35 / 2;
         int rowPosition = screen.getTerminalSize().getRows() / 2 - 10;
 
-        l1.setForegroundColor(TextColor.ANSI.YELLOW);
+        l1.setForegroundColor(TextColor.ANSI.WHITE);
         l1.setSize(new TerminalSize(76, 1));
         l1.addStyle(SGR.BOLD);
         l1.setPosition(new TerminalPosition(columnPosition + 13, rowPosition += 2));
@@ -216,7 +231,7 @@ public class Menu {
         int columnPosition = screen.getTerminalSize().getColumns() / 2 - 35 / 2;
         int rowPosition = screen.getTerminalSize().getRows() / 2 - 10;
 
-        l1.setForegroundColor(TextColor.ANSI.YELLOW);
+        l1.setForegroundColor(TextColor.ANSI.WHITE);
         l1.setSize(new TerminalSize(76, 1));
         l1.addStyle(SGR.BOLD);
         l1.setPosition(new TerminalPosition(columnPosition + 9, rowPosition += 2));
@@ -288,17 +303,17 @@ public class Menu {
         int columnPosition = screen.getTerminalSize().getColumns() / 2 - 35 / 2;
         int rowPosition = screen.getTerminalSize().getRows() / 2 - 20;
 
-        l1.setForegroundColor(TextColor.ANSI.YELLOW);
+        l1.setForegroundColor(TextColor.ANSI.WHITE);
         l1.setSize(new TerminalSize(76, 1));
         l1.addStyle(SGR.BOLD);
         l1.setPosition(new TerminalPosition(columnPosition, rowPosition));
 
-        l2.setForegroundColor(TextColor.ANSI.YELLOW);
+        l2.setForegroundColor(TextColor.ANSI.WHITE);
         l2.setSize(new TerminalSize(76, 1));
         l2.addStyle(SGR.BOLD);
         l2.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
 
-        l3.setForegroundColor(TextColor.ANSI.YELLOW);
+        l3.setForegroundColor(TextColor.ANSI.WHITE);
         l3.setSize(new TerminalSize(76, 1));
         l3.addStyle(SGR.BOLD);
         l3.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
@@ -317,7 +332,7 @@ public class Menu {
         if (newMapHighScore) { // NYTT
             Label l5 = new Label("NEW MAP HIGHSCORE!!!"); // NYTT
 
-            l5.setForegroundColor(TextColor.ANSI.YELLOW);
+            l5.setForegroundColor(TextColor.ANSI.WHITE);
             l5.setSize(new TerminalSize(76, 1));
             l5.addStyle(SGR.BOLD);
             l5.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
@@ -378,9 +393,14 @@ public class Menu {
 
         //Vart vill vi skriva menyn på skärmen?
         int columnPosition = screen.getTerminalSize().getColumns() / 2 - 35 / 2;
-        int rowPosition = screen.getTerminalSize().getRows() / 2 - 20;
+        int rowPosition = screen.getTerminalSize().getRows() / 2 - 10;
 
-        Label l1 = new Label("GAME OVER!!!"); // NYTT
+        Label l1 = new Label("██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ██╗   ██╗███████╗██████╗ \n" +
+                "██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔═══██╗██║   ██║██╔════╝██╔══██╗\n" +
+                "██║  ███╗███████║██╔████╔██║█████╗      ██║   ██║██║   ██║█████╗  ██████╔╝\n" +
+                "██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗\n" +
+                "╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝ ╚████╔╝ ███████╗██║  ██║\n" +
+                " ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝"); // NYTT
         Label l2 = new Label("Your time on this map was: " + Statistics.formateTime(Game.stats.getMapTime())); // NYTT
         Label l3 = new Label("Your score on this map: " + Game.stats.getMapScore()); // NYTT
         Label l4 = new Label("Your total score is: " + Game.stats.getTotalScore()); // NYTT
@@ -404,22 +424,23 @@ public class Menu {
             stop.set(true);
         });
 
-        l1.setForegroundColor(TextColor.ANSI.YELLOW);
-        l1.setSize(new TerminalSize(76, 1));
+        //l1.setForegroundColor(TextColor.ANSI.WHITE);
+        l1.setSize(new TerminalSize(100, 8));
         l1.addStyle(SGR.BOLD);
-        l1.setPosition(new TerminalPosition(columnPosition, rowPosition));
+        l1.addStyle(SGR.BLINK);
+        l1.setPosition(new TerminalPosition(37, 8));
 
-        l2.setForegroundColor(TextColor.ANSI.YELLOW);
+        l2.setForegroundColor(TextColor.ANSI.WHITE);
         l2.setSize(new TerminalSize(76, 1));
         l2.addStyle(SGR.BOLD);
         l2.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
 
-        l3.setForegroundColor(TextColor.ANSI.YELLOW);
+        l3.setForegroundColor(TextColor.ANSI.WHITE);
         l3.setSize(new TerminalSize(76, 1));
         l3.addStyle(SGR.BOLD);
         l3.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
 
-        l4.setForegroundColor(TextColor.ANSI.YELLOW);
+        l4.setForegroundColor(TextColor.ANSI.WHITE);
         l4.setSize(new TerminalSize(76, 1));
         l4.addStyle(SGR.BOLD);
         l4.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
@@ -427,7 +448,7 @@ public class Menu {
         if (newHighOrTime) {
             Label l5 = new Label("NEW MAP HIGHSCORE!!!"); // NYTT
 
-            l5.setForegroundColor(TextColor.ANSI.YELLOW);
+            l5.setForegroundColor(TextColor.ANSI.WHITE);
             l5.setSize(new TerminalSize(76, 1));
             l5.addStyle(SGR.BOLD);
             l5.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
@@ -440,7 +461,7 @@ public class Menu {
         if (newTotalHighScore && Game.map.isCoinMode()) { // NYTT
             Label l7 = new Label("NEW TOTAL HIGHSCORE!!!");
 
-            l7.setForegroundColor(TextColor.ANSI.YELLOW);
+            l7.setForegroundColor(TextColor.ANSI.WHITE);
             l7.setSize(new TerminalSize(76, 1));
             l7.addStyle(SGR.BOLD);
             l7.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
@@ -535,22 +556,22 @@ public class Menu {
             stop.set(true);
         });
 
-        l1.setForegroundColor(TextColor.ANSI.YELLOW);
+        l1.setForegroundColor(TextColor.ANSI.WHITE);
         l1.setSize(new TerminalSize(76, 1));
         l1.addStyle(SGR.BOLD);
         l1.setPosition(new TerminalPosition(columnPosition, rowPosition));
 
-        l2.setForegroundColor(TextColor.ANSI.YELLOW);
+        l2.setForegroundColor(TextColor.ANSI.WHITE);
         l2.setSize(new TerminalSize(76, Game.highscore.getMapHighscore().size()));
         l2.addStyle(SGR.BOLD);
         l2.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
 
-        l3.setForegroundColor(TextColor.ANSI.YELLOW);
+        l3.setForegroundColor(TextColor.ANSI.WHITE);
         l3.setSize(new TerminalSize(76, 1));
         l3.addStyle(SGR.BOLD);
         l3.setPosition(new TerminalPosition(columnPosition, rowPosition += 2 * Game.highscore.getMapHighscore().size()));
 
-        l4.setForegroundColor(TextColor.ANSI.YELLOW);
+        l4.setForegroundColor(TextColor.ANSI.WHITE);
         l4.setSize(new TerminalSize(76, Game.highscore.getTotalHighscore().size()));
         l4.addStyle(SGR.BOLD);
         l4.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));
@@ -608,12 +629,12 @@ public class Menu {
 
 
 
-        l1.setForegroundColor(TextColor.ANSI.YELLOW);
+        l1.setForegroundColor(TextColor.ANSI.WHITE);
         l1.setSize(new TerminalSize(76, 1));
         l1.addStyle(SGR.BOLD);
         l1.setPosition(new TerminalPosition(columnPosition, rowPosition));
 
-        l2.setForegroundColor(TextColor.ANSI.YELLOW);
+        l2.setForegroundColor(TextColor.ANSI.WHITE);
         l2.setSize(new TerminalSize(76, Game.highscore.getMapHighscore().size()));
         l2.addStyle(SGR.BOLD);
         l2.setPosition(new TerminalPosition(columnPosition, rowPosition += 2));

@@ -59,6 +59,7 @@ public class Game {
         try {
             Terminal terminal = defaultTerminalFactory.createTerminal();
             //terminal.setCursorVisible(false);
+            //terminal.setBackgroundColor(new TextColor.RGB(255, 0, 255));
             screen = new TerminalScreen(terminal);
             textGUI = new MultiWindowTextGUI(screen); // NYTT
             screen.startScreen();
@@ -142,6 +143,8 @@ public class Game {
         while (gameRunning) {
             player.handleInput();
             map.drawMapStats(); // NYTT
+
+            //kolla om en buff i listan har en timeLeft <= 0. Plocka i så fall bort den.
         }
 
         for(Enemy e : enemies.getEnemies()) {
